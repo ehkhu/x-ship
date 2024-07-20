@@ -90,7 +90,7 @@ export function TasksTable({ tasksPromise }: TasksTableProps) {
         ) : null
       }
     >
-      {featureFlags.includes('advancedFilter') ? (
+      {/* {featureFlags.includes('advancedFilter') ? (
         <DataTableAdvancedToolbar table={table} filterFields={filterFields}>
           <TasksTableToolbarActions table={table} />
         </DataTableAdvancedToolbar>
@@ -98,7 +98,11 @@ export function TasksTable({ tasksPromise }: TasksTableProps) {
         <DataTableToolbar table={table} filterFields={filterFields}>
           <TasksTableToolbarActions table={table} />
         </DataTableToolbar>
-      )}
+      )} */}
+
+      <DataTableToolbar table={table} filterFields={filterFields}>
+        <TasksTableToolbarActions table={table} />
+      </DataTableToolbar>
     </DataTable>
   );
 }
