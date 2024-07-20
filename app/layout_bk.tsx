@@ -1,17 +1,15 @@
-import type { Metadata, Viewport } from 'next';
-import { Inter as FontSans } from 'next/font/google';
-import './globals.css';
+// import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
+import { SiteHeader } from '@/components/layouts/site-header';
+import { ThemeProvider } from '@/components/providers';
+import { TailwindIndicator } from '@/components/tailwind-indicator';
+
+import './globals.css';
+
+import type { Metadata, Viewport } from 'next';
+
 import { fontMono, fontSans } from '@/lib/fonts';
 import { Toaster } from '@/components/ui/toaster';
-import { TailwindIndicator } from '@/components/tailwind-indicator';
-import { ThemeProvider } from '@/components/providers';
-import { SiteHeader } from '@/components/layouts/site-header';
-// setting up font
-// const fontSans = FontSans({
-//   subsets: ['latin'],
-//   variable: '--font-sans',
-// });
 
 export const metadata: Metadata = {
   title: 'X Ship Next App',
@@ -26,13 +24,10 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head />
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
@@ -46,11 +41,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* <div className="relative flex min-h-screen flex-col"> */}
-          {/* <SiteHeader /> */}
-          <main className="flex-1">{children}</main>
-          {/* </div> */}
-          {/* <TailwindIndicator /> */}
+          <div className="relative flex min-h-screen flex-col">
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+          </div>
+          <TailwindIndicator />
         </ThemeProvider>
         <Toaster />
       </body>

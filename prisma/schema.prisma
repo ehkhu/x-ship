@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id        String       @id @default(uuid()) // Use UUID for id
+  code      String       @unique
+  title     String?
+  status    TaskStatus
+  label     TaskLabel
+  priority  TaskPriority
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+// Enum definitions
+enum TaskStatus {
+  todo
+  in_progress // Use snake_case or camelCase as appropriate
+  done
+  canceled
+}
+
+enum TaskLabel {
+  bug
+  feature
+  enhancement
+  documentation
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+}
