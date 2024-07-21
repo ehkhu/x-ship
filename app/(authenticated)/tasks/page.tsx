@@ -8,10 +8,10 @@ import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
 import { DateRangePicker } from '@/components/date-range-picker';
 import { Shell } from '@/components/shell';
 
-import { TasksTable } from '../_components/tasks-table';
-import { TasksTableProvider } from '../_components/tasks-table-provider';
-import { getTasks } from '../_lib/queries';
-import { searchParamsSchema } from '../_lib/validations';
+import { TasksTable } from '../../_components/tasks-table';
+import { TasksTableProvider } from '../../_components/tasks-table-provider';
+import { getTasks } from '../../_lib/queries';
+import { searchParamsSchema } from '../../_lib/validations';
 
 export interface IndexPageProps {
   searchParams: SearchParams;

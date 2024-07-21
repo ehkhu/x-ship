@@ -46,10 +46,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col">
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-          </div>
+          {children}
+          {/* <div className="relative flex min-h-screen flex-col"> */}
+          {/* <SiteHeader /> */}
+          {/* <main className="flex-1">{children}</main> */}
+          {/* </div> */}
           {/* <TailwindIndicator /> */}
         </ThemeProvider>
         <Toaster />
