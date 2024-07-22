@@ -44,3 +44,70 @@ enum TaskPriority {
   medium
   high
 }
+
+// Region table
+model Region {
+  id   Int    @id @default(autoincrement())
+  name String
+  code      String       @unique
+  // One-to-many relationship with Township
+  townships Township[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Township table
+model Township {
+  id       Int    @id @default(autoincrement())
+  name     String
+  regionId Int // Foreign key reference to Region table
+
+  // Define the relationship with Region
+  region Region @relation(fields: [regionId], references: [id])
+
+  // One-to-many relationship with Village
+  villages Village[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Village table
+model Village {
+  id         Int    @id @default(autoincrement())
+  name       String
+  code      String       @unique
+  townshipId Int // Foreign key reference to Township table
+
+  // Define the relationship with Township
+  township Township @relation(fields: [townshipId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Department table
+model Department {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  // One-to-many relationship with Position
+  positions Position[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Position table
+model Position {
+  id           Int    @id @default(autoincrement())
+  name         String
+  departmentId Int? // Nullable foreign key reference to Department table
+
+  // Define the optional relationship with Department
+  department Department? @relation(fields: [departmentId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
