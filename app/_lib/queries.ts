@@ -1,9 +1,6 @@
 import 'server-only';
 import { unstable_noStore as noStore } from 'next/cache';
-import { filterColumn } from '@/lib/filter-column';
 import { type GetTasksSchema } from './validations';
-import { totalmem } from 'os';
-import { Task } from '@/types';
 import { parseISO, startOfDay, endOfDay } from 'date-fns';
 import prisma from '@/prisma/client';
 
@@ -12,7 +9,6 @@ export async function getTasks(input: GetTasksSchema) {
   // const { page, per_page, sort, title, status, priority, operator, from, to } =
   //   input;
 
-  // code go here
   const page = +input.page;
   const per_page = +input.per_page;
   const sort = (input.sort as string) || 'createdAt.desc';
@@ -60,16 +56,6 @@ export async function getTasks(input: GetTasksSchema) {
         where,
       }),
     ]);
-
-    // const formattedTasks = tasks.map((task) => ({
-    //   id: task.id,
-    //   code: task.code,
-    //   title: task.title,
-    //   status: task.status,
-    //   priority: task.priority,
-    //   label: task.label,
-    //   createdAt: task.createdAt.toISOString().split('T')[0], // Format date to YYYY-MM-DD
-    // }));
 
     return {
       data: tasks,

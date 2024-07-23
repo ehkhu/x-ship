@@ -21,7 +21,7 @@ model Task {
   label     TaskLabel
   priority  TaskPriority
   createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  updatedAt DateTime     @default(now())
 }
 
 // Enum definitions
@@ -45,69 +45,131 @@ enum TaskPriority {
   high
 }
 
-// Region table
-model Region {
-  id   Int    @id @default(autoincrement())
-  name String
-  code      String       @unique
-  // One-to-many relationship with Township
+// District table
+model District {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  code      String     @unique
   townships Township[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
 }
 
 // Township table
 model Township {
-  id       Int    @id @default(autoincrement())
-  name     String
-  regionId Int // Foreign key reference to Region table
-
-  // Define the relationship with Region
-  region Region @relation(fields: [regionId], references: [id])
-
-  // One-to-many relationship with Village
-  villages Village[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  code        String    @unique
+  karenNameEn String
+  districtId  Int
+  district    District  @relation(fields: [districtId], references: [id])
+  vthcs       Vthc[]
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
 }
 
-// Village table
+model Vthc {
+  id               Int       @id @default(autoincrement())
+  name             String    @unique
+  code             String    @unique
+  townshipCode     String // Foreign key reference to Township table
+  townshipName     String?
+  townshipNameMIMU String?
+  townshipId       Int
+  township         Township  @relation(fields: [townshipId], references: [id])
+  villages         Village[]
+  createdAt        DateTime? @default(now())
+  updatedAt        DateTime? @updatedAt
+}
+
 model Village {
-  id         Int    @id @default(autoincrement())
-  name       String
-  code      String       @unique
-  townshipId Int // Foreign key reference to Township table
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  code     String  @unique
+  vthcCode String
+  vthcName String?
+  vtch     Vthc    @relation(fields: [vthcCode], references: [code])
 
-  // Define the relationship with Township
-  township Township @relation(fields: [townshipId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
-// Department table
+model Country {
+  id          Int        @id @default(autoincrement())
+  countryName String?
+  // Relations
+  locations   Location[]
+}
+
 model Department {
-  id   Int    @id @default(autoincrement())
-  name String
+  id         Int    @id @default(autoincrement())
+  name       String @map("DEPARTMENT_NAME") @db.VarChar(30)
+  managerId  Int?
+  locationId Int?
 
-  // One-to-many relationship with Position
-  positions Position[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // Relations
+  employees   Employee[]
+  location    Location?    @relation(fields: [locationId], references: [id])
+  jobHistorys JobHistory[]
 }
 
-// Position table
-model Position {
-  id           Int    @id @default(autoincrement())
-  name         String
-  departmentId Int? // Nullable foreign key reference to Department table
+model Employee {
+  id            Int      @id @default(autoincrement())
+  name          String?  @db.VarChar(20)
+  email         String   @db.VarChar(25)
+  phoneNumber   String?  @db.VarChar(20)
+  hireDate      DateTime @db.Date
+  jobId         Int?
+  salary        Float?
+  commissionPct Float?
+  managerId     Int?
+  departmentId  Int?
 
-  // Define the optional relationship with Department
+  // Relations
+  department   Department?  @relation(fields: [departmentId], references: [id])
+  job          Job?         @relation(fields: [jobId], references: [id])
+  manager      Employee?    @relation("ManagerEmployee", fields: [managerId], references: [id])
+  subordinates Employee[]   @relation("ManagerEmployee")
+  jobHistory   JobHistory[]
+}
+
+model Job {
+  id        Int     @id @default(autoincrement())
+  code      String?
+  jobTitle  String  @db.VarChar(35)
+  minSalary Int?
+  maxSalary Int?
+
+  // Relations
+  employees  Employee[]
+  jobHistory JobHistory[]
+}
+
+model JobHistory {
+  employeeId   Int
+  startDate    DateTime @db.Date
+  endDate      DateTime @db.Date
+  jobId        Int
+  departmentId Int?
+
+  // Relations
+  employee   Employee    @relation(fields: [employeeId], references: [id])
+  job        Job         @relation(fields: [jobId], references: [id])
   department Department? @relation(fields: [departmentId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // Composite key
+  @@id([employeeId, startDate, endDate])
+}
+
+model Location {
+  id            Int     @id @default(autoincrement())
+  streetAddress String?
+  postalCode    String?
+  city          String
+  stateProvince String?
+  countryId     Int?
+
+  // Relations
+  country     Country?     @relation(fields: [countryId], references: [id])
+  departments Department[]
 }

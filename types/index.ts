@@ -1,6 +1,4 @@
-//gonna replace drizzle-orm with prisma
-// import { type SQL } from 'drizzle-orm';
-
+//Common types for application
 export interface SearchParams {
   [key: string]: string | string[] | undefined;
 }
@@ -28,15 +26,34 @@ export interface DataTableFilterOption<TData> {
   filterOperator?: string;
   isMulti?: boolean;
 }
-
+/**
+ * Interface to configure middleware for authenticated routes
+ */
 declare type AuthMiddleware = 'auth' | 'guest';
+/**
+ * Configuration options for the useAuth hook
+ * @property {AuthMiddleware} middleware - Middleware to use for authenticated routes
+ * @property {string} [redirectIfAuthenticated] - Route to redirect to if the user is authenticated
+ */
 export interface IUseAuth {
   middleware: AuthMiddleware;
   redirectIfAuthenticated?: string;
 }
 
+/**
+ * Interface for making API requests.
+ * @property {React.Dispatch<React.SetStateAction<never[]>>} setErrors - Function to set errors.
+ * @property {React.Dispatch<React.SetStateAction<any | null>>} setStatus - Function to set status.
+ * @property {any} [key: string] - Additional properties.
+ */
 export interface IApiRequest {
+  /**
+   * Function to set errors.
+   */
   setErrors: React.Dispatch<React.SetStateAction<never[]>>;
+  /**
+   * Function to set status.
+   */
   setStatus: React.Dispatch<React.SetStateAction<any | null>>;
   [key: string]: any;
 }
@@ -47,8 +64,8 @@ export interface User {
   email?: string;
   email_verified_at?: string;
   must_verify_email?: boolean; // this is custom attribute
-  created_at?: string;
-  updated_at?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // for data table
