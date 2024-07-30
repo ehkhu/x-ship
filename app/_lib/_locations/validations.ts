@@ -32,31 +32,41 @@ export const getLocationsSchema = searchLocationParamsSchema;
 export type GetLocationsSchema = z.infer<typeof getLocationsSchema>;
 
 export const createLocationSchema = z.object({
-  streetAddress: z.string({
-    required_error: 'Please enter a street address.',
-  }),
-  postalCode: z.string({
-    required_error: 'Please enter a postal code.',
-  }),
-  city: z.string({
-    required_error: 'Please enter a city.',
-  }),
-  stateProvince: z.string({
-    required_error: 'Please enter a state/province.',
-  }),
-  countryId: z.number({
-    required_error: 'Please select a country.',
-  }),
+  streetAddress: z
+    .string({
+      required_error: 'Please enter a street address.',
+    })
+    .default('de'),
+  postalCode: z
+    .string({
+      required_error: 'Please enter a postal code.',
+    })
+    .default('de'),
+  city: z
+    .string({
+      required_error: 'Please enter a city.',
+    })
+    .default('de'),
+  stateProvince: z
+    .string({
+      required_error: 'Please enter a state/province.',
+    })
+    .default('de'),
+  countryId: z
+    .number({
+      required_error: 'Please select a country.',
+    })
+    .default(1),
 });
 
 export type CreateLocationSchema = z.infer<typeof createLocationSchema>;
 
 export const updateLocationSchema = z.object({
-  streetAddress: z.string().optional(),
-  postalCode: z.string().optional(),
-  city: z.string().optional(),
-  stateProvince: z.string().optional(),
-  countryId: z.number().optional(),
+  streetAddress: z.string().optional().default(''),
+  postalCode: z.string().optional().default(''),
+  city: z.string().optional().default(''),
+  stateProvince: z.string().optional().default(''),
+  countryId: z.number().optional().default(1),
 });
 
 export type UpdateLocationSchema = z.infer<typeof updateLocationSchema>;

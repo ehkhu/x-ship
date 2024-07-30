@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-
+import useSWR from 'swr';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -25,32 +25,41 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Location } from '@/types/types-locations';
 import {
   updateLocationSchema,
   UpdateLocationSchema,
 } from '@/app/_lib/_locations/validations';
-
-import { updateLocation } from '@/app/_lib/_locations/actions';
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import prisma from '@/prisma/client';
-// import { updateLocationSchema, type UpdateLocationSchema } from '../_lib/validations';
-// import { Location } from '@/types';
-// import { locations } from '@/db/constent';
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+
+import { cn } from '@/lib/utils';
+
+import { Check, ChevronsUpDown } from 'lucide-react';
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import { updateLocation } from '@/app/_lib/_locations/actions';
+
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface UpdateLocationSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
   location: Location;
 }
 
+const fetcher = (...args: [RequestInfo, RequestInit?]): Promise<any> =>
+  fetch(...args).then((res) => res.json());
 export function UpdateLocationSheet({
   location,
   ...props
@@ -86,7 +95,27 @@ export function UpdateLocationSheet({
     });
   }
 
-  // const countries = await prisma.country.findMany();
+  //fech countries
+  const {
+    data: countries,
+    error,
+    isLoading,
+  } = useSWR('/api/countries', fetcher);
+
+  // If there was an error fetching the data, display a message
+  if (error) return <div>Failed to load countries</div>;
+
+  // If the data is still being loaded, display a loading state
+  if (isLoading) {
+    return (
+      <div>
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-4 w-[150px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
+  }
   return (
     <Sheet {...props}>
       <SheetContent className="flex flex-col gap-6 sm:max-w-md">
@@ -108,7 +137,7 @@ export function UpdateLocationSheet({
                 <FormItem>
                   <FormLabel>Street Address</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <Input
                       placeholder="Do a kickflip"
                       className="resize-none"
                       {...field}
@@ -125,7 +154,7 @@ export function UpdateLocationSheet({
                 <FormItem>
                   <FormLabel>Postal Code</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <Input
                       placeholder="Postal Code"
                       className="resize-none"
                       {...field}
@@ -142,7 +171,7 @@ export function UpdateLocationSheet({
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <Input
                       placeholder="city"
                       className="resize-none"
                       {...field}
@@ -159,7 +188,7 @@ export function UpdateLocationSheet({
                 <FormItem>
                   <FormLabel>State Provience</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <Input
                       placeholder="State"
                       className="resize-none"
                       {...field}
@@ -173,31 +202,58 @@ export function UpdateLocationSheet({
               control={form.control}
               name="countryId"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Country</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={'' + field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="capitalize">
-                        <SelectValue placeholder="Select a label" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        {/* {countries.map((item) => (
-                          <SelectItem
-                            key={item.id}
-                            value={'' + item.id}
-                            className="capitalize"
-                          >
-                            {item.countryName}
-                          </SelectItem>
-                        ))} */}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            'w-full justify-between',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value
+                            ? countries.find(
+                                (country: any) => country.value === field.value
+                              )?.label
+                            : 'Select country'}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search country..." />
+                        <CommandList>
+                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandGroup>
+                            {countries.map((country: any) => (
+                              <CommandItem
+                                value={country.label}
+                                key={country.value}
+                                onSelect={() => {
+                                  form.setValue('countryId', country.value);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    'mr-2 h-4 w-4',
+                                    country.value === field.value
+                                      ? 'opacity-100'
+                                      : 'opacity-0'
+                                  )}
+                                />
+                                {country.label}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}

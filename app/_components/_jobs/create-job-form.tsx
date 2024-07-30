@@ -1,7 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { type UseFormReturn } from 'react-hook-form';
+
+import { useForm, type UseFormReturn } from 'react-hook-form';
+
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   Form,
@@ -12,9 +15,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 
-import { Textarea } from '@/components/ui/textarea';
+import { CreateJobSchema, updateJobSchema } from '@/app/_lib/_jobs/validations';
 
-import { CreateJobSchema } from '@/app/_lib/_jobs/validations';
 import { Input } from '@/components/ui/input';
 
 interface CreateJobFormProps
@@ -25,10 +27,19 @@ interface CreateJobFormProps
 }
 
 export function CreateJobForm({
-  form,
+  // form,
   onSubmit,
   children,
 }: CreateJobFormProps) {
+  const form = useForm<CreateJobSchema>({
+    resolver: zodResolver(updateJobSchema),
+    defaultValues: {
+      jobTitle: '',
+      minSalary: 0,
+      maxSalary: 0,
+      code: '',
+    },
+  });
   return (
     <Form {...form}>
       <form

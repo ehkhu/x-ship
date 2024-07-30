@@ -3,15 +3,11 @@
 
 import * as React from 'react';
 
-// import { Location, type DataTableFilterField } from '@/types';
-
 import { useDataTable } from '@/hooks/use-data-table';
-import { DataTableAdvancedToolbar } from '@/components/data-table/advanced/data-table-advanced-toolbar';
+
 import { DataTable } from '@/components/data-table/data-table';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
 
-// import { type getLocations } from '../_lib/queries';
-// import { getPriorityIcon, getStatusIcon } from '../_lib/utils';
 import { getColumns } from './locations-table-columns';
 import { type getLocations } from '@/app/_lib/_locations/queries';
 import { useLocationsTable } from './locations-table-provider';
@@ -19,10 +15,6 @@ import { DataTableFilterField } from '@/types';
 import { type Location } from '@/types/types-locations';
 import { LocationsTableFloatingBar } from './locations-table-floating-bar';
 import { LocationsTableToolbarActions } from './locations-table-toolbar-actions';
-// import { LocationsTableFloatingBar } from './locations-table-floating-bar';
-// import { useLocationsTable } from './locations-table-provider';
-// import { LocationsTableToolbarActions } from './locations-table-toolbar-actions';
-// import { locations } from '@/db/constent';
 
 interface LocationsTableProps {
   locationsPromise: ReturnType<typeof getLocations>;
@@ -66,7 +58,7 @@ export function LocationsTable({ locationsPromise }: LocationsTableProps) {
     defaultPerPage: 10,
     defaultSort: 'id.desc',
   });
-  console.log(data);
+
   return (
     <DataTable
       table={table}

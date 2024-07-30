@@ -25,7 +25,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Job } from '@/types/types-jobs';
 import { updateJobSchema, UpdateJobSchema } from '@/app/_lib/_jobs/validations';
 
@@ -91,11 +91,7 @@ export function UpdateJobSheet({ job, ...props }: UpdateJobSheetProps) {
                 <FormItem>
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Do a kickflip"
-                      className="resize-none"
-                      {...field}
-                    />
+                    <Input placeholder="Do a kickflip" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,7 +104,7 @@ export function UpdateJobSheet({ job, ...props }: UpdateJobSheetProps) {
                 <FormItem>
                   <FormLabel>Label</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <Input
                       placeholder="Job title"
                       className="resize-none"
                       {...field}
@@ -125,7 +121,7 @@ export function UpdateJobSheet({ job, ...props }: UpdateJobSheetProps) {
                 <FormItem>
                   <FormLabel>Status</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <Input
                       placeholder="Job title"
                       className="resize-none"
                       {...field}
@@ -142,7 +138,7 @@ export function UpdateJobSheet({ job, ...props }: UpdateJobSheetProps) {
                 <FormItem>
                   <FormLabel>Priority</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <Input
                       placeholder="Job title"
                       className="resize-none"
                       {...field}

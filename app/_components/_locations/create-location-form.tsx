@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { type UseFormReturn } from 'react-hook-form';
+import { useForm, type UseFormReturn } from 'react-hook-form';
 
 import {
   Form,
@@ -13,7 +13,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 
-import { CreateLocationSchema } from '@/app/_lib/_locations/validations';
+import {
+  CreateLocationSchema,
+  updateLocationSchema,
+} from '@/app/_lib/_locations/validations';
 
 import { Input } from '@/components/ui/input';
 
@@ -39,6 +42,9 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface CreateLocationFormProps
   extends Omit<React.ComponentPropsWithRef<'form'>, 'onSubmit'> {
@@ -47,28 +53,46 @@ interface CreateLocationFormProps
   onSubmit: (data: CreateLocationSchema) => void;
 }
 
-// const fetcher = (...args) => fetch({ ...args ).then((res) => res.json());
 const fetcher = (...args: [RequestInfo, RequestInit?]): Promise<any> =>
   fetch(...args).then((res) => res.json());
 
 export function CreateLocationForm({
-  form,
   onSubmit,
   children,
 }: CreateLocationFormProps) {
-  // const countries = await prisma.country.findMany();
+  //for react default form
+  const form = useForm<CreateLocationSchema>({
+    resolver: zodResolver(updateLocationSchema),
+    defaultValues: {
+      streetAddress: '',
+      postalCode: '',
+      city: '',
+      stateProvince: '',
+      countryId: 1,
+    },
+  });
 
+  //fech countries
   const {
     data: countries,
     error,
     isLoading,
   } = useSWR('/api/countries', fetcher);
 
-  if (error) return <div>failed to load</div>;
-  if (isLoading) return <div>loading...</div>;
-  console.log(countries);
-  //for combo box of countries
-  const countriesOptions = countries;
+  // If there was an error fetching the data, display a message
+  if (error) return <div>Failed to load countries</div>;
+
+  // If the data is still being loaded, display a loading state
+  if (isLoading) {
+    return (
+      <div>
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-4 w-[150px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -83,16 +107,13 @@ export function CreateLocationForm({
             <FormItem>
               <FormLabel>Street / Address</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="street / address"
-                  className="resize-none"
-                  {...field}
-                />
+                <Input placeholder="street / address" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="postalCode"
@@ -100,16 +121,13 @@ export function CreateLocationForm({
             <FormItem>
               <FormLabel>Postal Code</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Postal Code"
-                  className="resize-none"
-                  {...field}
-                />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="city"
@@ -123,6 +141,7 @@ export function CreateLocationForm({
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="stateProvince"
@@ -141,7 +160,6 @@ export function CreateLocationForm({
           )}
         />
 
-        {/* Other form fields country select */}
         <FormField
           control={form.control}
           name="countryId"
@@ -160,7 +178,7 @@ export function CreateLocationForm({
                       )}
                     >
                       {field.value
-                        ? countriesOptions.find(
+                        ? countries.find(
                             (country: any) => country.value === field.value
                           )?.label
                         : 'Select country'}
@@ -174,7 +192,7 @@ export function CreateLocationForm({
                     <CommandList>
                       <CommandEmpty>No country found.</CommandEmpty>
                       <CommandGroup>
-                        {countriesOptions.map((country: any) => (
+                        {countries.map((country: any) => (
                           <CommandItem
                             value={country.label}
                             key={country.value}

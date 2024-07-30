@@ -64,7 +64,7 @@ export async function updateJob(input: UpdateJobSchema & { id: number }) {
       where: { id: input.id },
       data: {
         jobTitle: input.jobTitle,
-        code: `JOB-${customAlphabet('0123456789', 4)()}`,
+        // code: `JOB-${customAlphabet('0123456789', 4)()}`,
         maxSalary: input.maxSalary,
         minSalary: input.minSalary,
       },

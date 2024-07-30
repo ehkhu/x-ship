@@ -69,3 +69,7 @@ layout.js
 loading.js
 not-fount.js
 page.js
+
+solution :
+combobox select error
+https://stackoverflow.com/questions/78308674/shadcn-combobox-disabled-even-thougyh-i-have-not-intentionally-doing-it
