@@ -479,44 +479,15 @@ INSERT INTO `Project` (`name`, `description`, `createdAt`, `updatedAt`) VALUES
 ('Project Upsilon', 'Description for Project Upsilon', NOW(), NOW());
 
 
-INSERT INTO `Employee` (`name`, `districtId`, `townshipId`, `vthcId`, `villageId`, `departmentId`, `positionId`, `managerId`, `joinDate`, `resignDate`, `status`, `createdAt`, `updatedAt`) VALUES
-('Employee 1', 1, 1, 1, 1, 1, 1, NULL, '2020-01-01', NULL, 'active', NOW(), NOW()),
-('Employee 2', 1, 1, 1, 1, 1, 2, 1, '2020-02-01', NULL, 'active', NOW(), NOW()),
-('Employee 3', 1, 1, 1, 1, 1, 3, 1, '2020-03-01', NULL, 'active', NOW(), NOW()),
-('Employee 4', 1, 1, 1, 1, 1, 4, 2, '2020-04-01', NULL, 'active', NOW(), NOW()),
-('Employee 5', 1, 1, 1, 1, 1, 5, 2, '2020-05-01', NULL, 'active', NOW(), NOW()),
-('Employee 6', 1, 1, 1, 1, 1, 6, 3, '2020-06-01', NULL, 'active', NOW(), NOW()),
-('Employee 7', 1, 1, 1, 1, 1, 7, 3, '2020-07-01', NULL, 'active', NOW(), NOW()),
-('Employee 8', 1, 1, 1, 1, 1, 8, 4, '2020-08-01', NULL, 'active', NOW(), NOW()),
-('Employee 9', 1, 1, 1, 1, 1, 9, 4, '2020-09-01', NULL, 'active', NOW(), NOW()),
-('Employee 10', 1, 1, 1, 1, 1, 10, 5, '2020-10-01', NULL, 'active', NOW(), NOW()),
-('Employee 11', 1, 1, 1, 1, 1, 1, 5, '2020-11-01', NULL, 'active', NOW(), NOW()),
-('Employee 12', 1, 1, 1, 1, 1, 2, 6, '2020-12-01', NULL, 'active', NOW(), NOW()),
-('Employee 13', 1, 1, 1, 1, 1, 3, 6, '2021-01-01', NULL, 'active', NOW(), NOW()),
-('Employee 14', 1, 1, 1, 1, 1, 4, 7, '2021-02-01', NULL, 'active', NOW(), NOW()),
-('Employee 15', 1, 1, 1, 1, 1, 5, 7, '2021-03-01', NULL, 'active', NOW(), NOW()),
-('Employee 16', 1, 1, 1, 1, 1, 6, 8, '2021-04-01', NULL, 'active', NOW(), NOW()),
-('Employee 17', 1, 1, 1, 1, 1, 7, 8, '2021-05-01', NULL, 'active', NOW(), NOW()),
-('Employee 18', 1, 1, 1, 1, 1, 8, 9, '2021-06-01', NULL, 'active', NOW(), NOW()),
-('Employee 19', 1, 1, 1, 1, 1, 9, 9, '2021-07-01', NULL, 'active', NOW(), NOW()),
-('Employee 20', 1, 1, 1, 1, 1, 10, 10, '2021-08-01', NULL, 'active', NOW(), NOW()),
-('Employee 21', 1, 1, 1, 1, 1, 1, 10, '2021-09-01', NULL, 'active', NOW(), NOW()),
-('Employee 22', 1, 1, 1, 1, 1, 2, 11, '2021-10-01', NULL, 'active', NOW(), NOW()),
-('Employee 23', 1, 1, 1, 1, 1, 3, 11, '2021-11-01', NULL, 'active', NOW(), NOW()),
-('Employee 24', 1, 1, 1, 1, 1, 4, 12, '2021-12-01', NULL, 'active', NOW(), NOW()),
-('Employee 25', 1, 1, 1, 1, 1, 5, 12, '2022-01-01', NULL, 'active', NOW(), NOW()),
-('Employee 26', 1, 1, 1, 1, 1, 6, 13, '2022-02-01', NULL, 'active', NOW(), NOW()),
-('Employee 27', 1, 1, 1, 1, 1, 7, 13, '2022-03-01', NULL, 'active', NOW(), NOW()),
-('Employee 28', 1, 1, 1, 1, 1, 8, 14, '2022-04-01', NULL, 'active', NOW(), NOW()),
-('Employee 29', 1, 1, 1, 1, 1, 9, 14, '2022-05-01', NULL, 'active', NOW(), NOW()),
-('Employee 30', 1, 1, 1, 1, 1, 10, 15, '2022-06-01', NULL, 'active', NOW(), NOW()),
-('Employee 31', 1, 1, 1, 1, 1, 1, 15, '2022-07-01', NULL, 'active', NOW(), NOW()),
-('Employee 32', 1, 1, 1, 1, 1, 2, 16, '2022-08-01', NULL, 'active', NOW(), NOW()),
-('Employee 33', 1, 1, 1, 1, 1, 3, 16, '2022-09-01', NULL, 'active', NOW(), NOW()),
-('Employee 34', 1, 1, 1, 1, 1, 4, 17, '2022-10-01', NULL, 'active', NOW(), NOW()),
-('Employee 35', 1, 1, 1, 1, 1, 5, 17, '2022-11-01', NULL, 'active', NOW(), NOW()),
-('Employee 36', 1, 1, 1, 1, 1, 6, 18, '2022-12-01', NULL, 'active', NOW(), NOW());
-
+INSERT INTO Jobs (code, jobTitle, minSalary, maxSalary) VALUES
+('A123', 'Software Engineer', 50000, 100000),
+('B456', 'Data Scientist', 60000, 120000),
+('C789', 'Product Manager', 55000, 110000),
+('D012', 'UX Designer', 45000, 90000),
+('E345', 'DevOps Engineer', 65000, 130000),
+('F678', 'Marketing Specialist', 40000, 85000),
+('G901', 'Sales Manager', 50000, 105000),
+('H234', 'HR Coordinator', 35000, 75000);
 
 -- missing codes KDHW-170
 -- (187, 'Shoper Koh', 'KRN-007-VIL-169', 'KDHW-170', 'Naw Yo Hta/Thaw Tu Hkee'),
