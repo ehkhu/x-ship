@@ -32,11 +32,21 @@ export const getLocationsSchema = searchLocationParamsSchema;
 export type GetLocationsSchema = z.infer<typeof getLocationsSchema>;
 
 export const createLocationSchema = z.object({
-  streetAddress: z.string().optional(),
-  postalCode: z.string().optional(),
-  city: z.string().optional(),
-  stateProvince: z.string().optional(),
-  countryId: z.number().optional(),
+  streetAddress: z.string({
+    required_error: 'Please enter a street address.',
+  }),
+  postalCode: z.string({
+    required_error: 'Please enter a postal code.',
+  }),
+  city: z.string({
+    required_error: 'Please enter a city.',
+  }),
+  stateProvince: z.string({
+    required_error: 'Please enter a state/province.',
+  }),
+  countryId: z.number({
+    required_error: 'Please select a country.',
+  }),
 });
 
 export type CreateLocationSchema = z.infer<typeof createLocationSchema>;

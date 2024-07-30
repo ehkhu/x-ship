@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+
 import { type UseFormReturn } from 'react-hook-form';
 
 import {
@@ -13,16 +14,31 @@ import {
 } from '@/components/ui/form';
 
 import { CreateLocationSchema } from '@/app/_lib/_locations/validations';
+
 import { Input } from '@/components/ui/input';
-import { Select } from '@radix-ui/react-select';
+
+import useSWR from 'swr';
+
 import {
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import prisma from '@/prisma/client';
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+
+import { Button } from '@/components/ui/button';
+
+import { cn } from '@/lib/utils';
+
+import { Check, ChevronsUpDown } from 'lucide-react';
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 
 interface CreateLocationFormProps
   extends Omit<React.ComponentPropsWithRef<'form'>, 'onSubmit'> {
@@ -31,12 +47,29 @@ interface CreateLocationFormProps
   onSubmit: (data: CreateLocationSchema) => void;
 }
 
+// const fetcher = (...args) => fetch({ ...args ).then((res) => res.json());
+const fetcher = (...args: [RequestInfo, RequestInit?]): Promise<any> =>
+  fetch(...args).then((res) => res.json());
+
 export function CreateLocationForm({
   form,
   onSubmit,
   children,
 }: CreateLocationFormProps) {
   // const countries = await prisma.country.findMany();
+
+  const {
+    data: countries,
+    error,
+    isLoading,
+  } = useSWR('/api/countries', fetcher);
+
+  if (error) return <div>failed to load</div>;
+  if (isLoading) return <div>loading...</div>;
+  console.log(countries);
+  //for combo box of countries
+  const countriesOptions = countries;
+
   return (
     <Form {...form}>
       <form
@@ -109,40 +142,67 @@ export function CreateLocationForm({
         />
 
         {/* Other form fields country select */}
-
-        {/* <FormField
+        <FormField
           control={form.control}
           name="countryId"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col">
               <FormLabel>Country</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={'' + field.value}
-              >
-                <FormControl>
-                  <SelectTrigger className="capitalize">
-                    <SelectValue placeholder="Select a label" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    {countries.map((item) => (
-                      <SelectItem
-                        key={item.id}
-                        value={'' + item.id}
-                        className="capitalize"
-                      >
-                        {item.countryName}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        'w-full justify-between',
+                        !field.value && 'text-muted-foreground'
+                      )}
+                    >
+                      {field.value
+                        ? countriesOptions.find(
+                            (country: any) => country.value === field.value
+                          )?.label
+                        : 'Select country'}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search country..." />
+                    <CommandList>
+                      <CommandEmpty>No country found.</CommandEmpty>
+                      <CommandGroup>
+                        {countriesOptions.map((country: any) => (
+                          <CommandItem
+                            value={country.label}
+                            key={country.value}
+                            onSelect={() => {
+                              form.setValue('countryId', country.value);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                'mr-2 h-4 w-4',
+                                country.value === field.value
+                                  ? 'opacity-100'
+                                  : 'opacity-0'
+                              )}
+                            />
+                            {country.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <FormMessage />
             </FormItem>
           )}
-        /> */}
+        />
+
         {children}
       </form>
     </Form>
