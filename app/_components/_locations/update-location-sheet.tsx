@@ -65,18 +65,21 @@ export function UpdateLocationSheet({
   ...props
 }: UpdateLocationSheetProps) {
   const [isUpdatePending, startUpdateTransition] = React.useTransition();
+  console.log('location', location);
 
-  const form = useForm<UpdateLocationSchema>({
+  let form = useForm<UpdateLocationSchema>({
     resolver: zodResolver(updateLocationSchema),
-    defaultValues: {
-      streetAddress: location.streetAddress ?? '',
-      postalCode: location.postalCode ?? '',
-      city: location.city ?? '',
-      stateProvince: location.stateProvince ?? '',
-      countryId: location.countryId ?? 1,
-    },
+    defaultValues: location.id
+      ? {
+          streetAddress: location.streetAddress ?? '',
+          postalCode: location.postalCode ?? '',
+          city: location.city ?? '',
+          stateProvince: location.stateProvince ?? '',
+          countryId: location.countryId ?? 1,
+        }
+      : {},
   });
-
+  console.log(form);
   function onSubmit(input: UpdateLocationSchema) {
     startUpdateTransition(async () => {
       const { error } = await updateLocation({
