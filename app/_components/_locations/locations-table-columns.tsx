@@ -1,40 +1,22 @@
 'use client';
 
 import * as React from 'react';
-import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { DotsHorizontalIcon, TrashIcon } from '@radix-ui/react-icons';
 import { type ColumnDef } from '@tanstack/react-table';
-import { toast } from 'sonner';
-
-import { getErrorMessage } from '@/lib/handle-error';
-import { formatDate } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import { Location } from '@/types/types-locations';
-import { UpdateLocationSheet } from './update-location-sheet';
 import { DeleteLocationsDialog } from './delete-location-dialog';
-// import { table } from 'console';
-
-// import { updateTask } from '../_lib/actions';
-// import { getPriorityIcon, getStatusIcon } from '../_lib/utils';
-// import { DeleteTasksDialog } from './delete-location-dialog';
-// import { UpdateTaskSheet } from './update-location-sheet';
-// import { tasks } from '@/db/constent';
-// import { Task } from '@/types';
+import { CreateLocationDialog } from './create-location-dialog';
 
 export function getColumns(): ColumnDef<Location>[] {
   return [
@@ -140,18 +122,20 @@ export function getColumns(): ColumnDef<Location>[] {
       id: 'actions',
       cell: function Cell({ row }) {
         const [isUpdatePending, startUpdateTransition] = React.useTransition();
-        const [showUpdateLocationSheet, setShowUpdateLocationSheet] =
+        // const [showUpdateLocationSheet, setShowUpdateLocationSheet] =
+        //   React.useState(false);
+        const [showCreateLocationDialog, setShowCreateLocationDialog] =
           React.useState(false);
         const [showDeleteLocationDialog, setShowDeleteLocationDialog] =
           React.useState(false);
 
         return (
           <>
-            <UpdateLocationSheet
+            {/* <UpdateLocationSheet
               open={showUpdateLocationSheet}
               onOpenChange={setShowUpdateLocationSheet}
               location={row.original}
-            />
+            /> */}
             <DeleteLocationsDialog
               open={showDeleteLocationDialog}
               onOpenChange={setShowDeleteLocationDialog}
@@ -159,7 +143,21 @@ export function getColumns(): ColumnDef<Location>[] {
               showTrigger={false}
               onSuccess={() => row.toggleSelected(false)}
             />
-            <DropdownMenu>
+
+            <CreateLocationDialog
+              openDialog={showCreateLocationDialog}
+              isEdit={true}
+              editData={row.original}
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowDeleteLocationDialog(true)}
+            >
+              <TrashIcon className="h-4 w-4" />
+            </Button>
+
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   aria-label="Open menu"
@@ -170,11 +168,10 @@ export function getColumns(): ColumnDef<Location>[] {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem
-                  onSelect={() => setShowUpdateLocationSheet(true)}
-                >
-                  Edit
+                <DropdownMenuItem>
+                  <CreateLocationDialog isEdit={true} editData={row.original} />
                 </DropdownMenuItem>
+
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onSelect={() => setShowDeleteLocationDialog(true)}
@@ -183,7 +180,7 @@ export function getColumns(): ColumnDef<Location>[] {
                   <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </>
         );
       },

@@ -1,25 +1,16 @@
 import * as React from 'react';
 
 import {
-  ArrowUpIcon,
-  CheckCircledIcon,
   Cross2Icon,
   DownloadIcon,
   ReloadIcon,
   TrashIcon,
 } from '@radix-ui/react-icons';
-import { SelectTrigger } from '@radix-ui/react-select';
 import { type Table } from '@tanstack/react-table';
 import { toast } from 'sonner';
 
 import { exportTableToCSV } from '@/lib/export';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import {
   Tooltip,
@@ -28,14 +19,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Kbd } from '@/components/kbd';
 import { Location } from '@/types/types-locations';
-import {
-  deleteLocations,
-  updateLocations,
-} from '@/app/_lib/_locations/actions';
-
-// import { deleteLocations, updateLocations } from '../_lib/actions';
-// import { Location } from '@/types/types-locations';
-// import { locations } from '@/db/constent';
+import { deleteLocations } from '@/app/_lib/_locations/actions';
 
 interface LocationsTableFloatingBarProps {
   table: Table<Location>;

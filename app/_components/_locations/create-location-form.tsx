@@ -57,20 +57,11 @@ const fetcher = (...args: [RequestInfo, RequestInit?]): Promise<any> =>
   fetch(...args).then((res) => res.json());
 
 export function CreateLocationForm({
+  form,
   onSubmit,
   children,
 }: CreateLocationFormProps) {
   //for react default form
-  const form = useForm<CreateLocationSchema>({
-    resolver: zodResolver(updateLocationSchema),
-    defaultValues: {
-      streetAddress: '',
-      postalCode: '',
-      city: '',
-      stateProvince: '',
-      countryId: 1,
-    },
-  });
 
   //fech countries
   const {
@@ -86,7 +77,7 @@ export function CreateLocationForm({
   if (isLoading) {
     return (
       <div>
-        <div className="flex items-center space-x-4">
+        <div className="space-x-4">
           <Skeleton className="h-4 w-[150px]" />
           <Skeleton className="h-4 w-[200px]" />
         </div>
