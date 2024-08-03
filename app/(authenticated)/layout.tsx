@@ -9,6 +9,7 @@ import {
   Package2,
   Search,
   ShoppingCart,
+  UserIcon,
   Users,
 } from 'lucide-react';
 
@@ -32,6 +33,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ModeToggle } from '@/components/layouts/mode-toggle';
+import { Separator } from '@/components/ui/separator';
 
 export default function RootLayout({
   children,
@@ -45,7 +47,7 @@ export default function RootLayout({
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
               <Package2 className="h-6 w-6" />
-              <span className="">Acme Inc</span>
+              <span className="">{process.env.APP_NAME}</span>
             </Link>
             <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
               <Bell className="h-4 w-4" />
@@ -95,7 +97,7 @@ export default function RootLayout({
             </nav>
           </div>
           <div className="mt-auto p-4">
-            <Card x-chunk="dashboard-02-chunk-0">
+            {/* <Card x-chunk="dashboard-02-chunk-0">
               <CardHeader className="p-2 pt-0 md:p-4">
                 <CardTitle>Upgrade to Pro</CardTitle>
                 <CardDescription>
@@ -108,7 +110,15 @@ export default function RootLayout({
                   Upgrade
                 </Button>
               </CardContent>
-            </Card>
+            </Card> */}
+            <Separator className="my-4" />
+            <Link
+              href="#"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+            >
+              <UserIcon className="h-4 w-4" />
+              Users
+            </Link>
           </div>
         </div>
       </div>
