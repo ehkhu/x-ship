@@ -1,70 +1,124 @@
-import {
-  eq,
-  ilike,
-  inArray,
-  isNotNull,
-  isNull,
-  not,
-  notLike,
-  type Column,
-  type ColumnBaseConfig,
-  type ColumnDataType,
-} from 'drizzle-orm';
-
-import { type DataTableConfig } from '@/config/data-table';
+import prisma from '@/prisma/client';
 
 export function filterColumn({
   column,
   value,
   isSelectable,
 }: {
-  column: Column<ColumnBaseConfig<ColumnDataType, string>, object, object>;
+  column: any; // Replace 'ModelName' with your actual model name
   value: string;
   isSelectable?: boolean;
 }) {
   const [filterValue, filterOperator] = (value?.split('~').filter(Boolean) ??
     []) as [
     string,
-    DataTableConfig['comparisonOperators'][number]['value'] | undefined,
+    (
+      | 'eq'
+      | 'notEq'
+      | 'isNull'
+      | 'isNotNull'
+      | 'ilike'
+      | 'notIlike'
+      | 'startsWith'
+      | 'endsWith'
+      | undefined
+    ),
   ];
 
-  if (!filterValue) return;
+  if (!filterValue) return {};
 
   if (isSelectable) {
     switch (filterOperator) {
       case 'eq':
-        return inArray(column, filterValue?.split('.').filter(Boolean) ?? []);
+        return {
+          [column]: {
+            in: filterValue?.split('.').filter(Boolean) ?? [],
+          },
+        };
       case 'notEq':
-        return not(
-          inArray(column, filterValue?.split('.').filter(Boolean) ?? [])
-        );
+        return {
+          NOT: {
+            [column]: {
+              in: filterValue?.split('.').filter(Boolean) ?? [],
+            },
+          },
+        };
       case 'isNull':
-        return isNull(column);
+        return {
+          [column]: null,
+        };
       case 'isNotNull':
-        return isNotNull(column);
+        return {
+          NOT: {
+            [column]: null,
+          },
+        };
       default:
-        return inArray(column, filterValue?.split('.') ?? []);
+        return {
+          [column]: {
+            in: filterValue?.split('.') ?? [],
+          },
+        };
     }
   }
 
   switch (filterOperator) {
     case 'ilike':
-      return ilike(column, `%${filterValue}%`);
+      return {
+        [column]: {
+          contains: filterValue,
+          mode: 'insensitive',
+        },
+      };
     case 'notIlike':
-      return notLike(column, `%${filterValue}%`);
+      return {
+        NOT: {
+          [column]: {
+            contains: filterValue,
+            mode: 'insensitive',
+          },
+        },
+      };
     case 'startsWith':
-      return ilike(column, `${filterValue}%`);
+      return {
+        [column]: {
+          startsWith: filterValue,
+          mode: 'insensitive',
+        },
+      };
     case 'endsWith':
-      return ilike(column, `%${filterValue}`);
+      return {
+        [column]: {
+          endsWith: filterValue,
+          mode: 'insensitive',
+        },
+      };
     case 'eq':
-      return eq(column, filterValue);
+      return {
+        [column]: filterValue,
+      };
     case 'notEq':
-      return not(eq(column, filterValue));
+      return {
+        NOT: {
+          [column]: filterValue,
+        },
+      };
     case 'isNull':
-      return isNull(column);
+      return {
+        [column]: null,
+      };
     case 'isNotNull':
-      return isNotNull(column);
+      return {
+        NOT: {
+          [column]: null,
+        },
+      };
     default:
-      return ilike(column, `%${filterValue}%`);
+      return {
+        [column]: {
+          contains: filterValue,
+          mode: 'insensitive',
+        },
+      };
   }
 }

@@ -1,7 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { DotsHorizontalIcon, TrashIcon } from '@radix-ui/react-icons';
+import {
+  CircleBackslashIcon,
+  DotsHorizontalIcon,
+  TrashIcon,
+} from '@radix-ui/react-icons';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -14,11 +18,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
-import { Location } from '@/types/types-locations';
-import { DeleteLocationsDialog } from './delete-location-dialog';
-import { CreateLocationDialog } from './create-location-dialog';
+import { Department } from '@/types/types-departments';
+import { DeleteDepartmentsDialog } from './delete-department-dialog';
+import { CreateDepartmentDialog } from './create-department-dialog';
 
-export function getColumns(): ColumnDef<Location>[] {
+export function getColumns(): ColumnDef<Department>[] {
   return [
     {
       id: 'select',
@@ -45,66 +49,42 @@ export function getColumns(): ColumnDef<Location>[] {
       enableHiding: false,
     },
     {
-      accessorKey: 'streetAddress',
+      accessorKey: 'name',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Street Address" />
+        <DataTableColumnHeader column={column} title="Name" />
       ),
-      cell: ({ row }) => (
-        <div className="w-30">{row.getValue('streetAddress')}</div>
-      ),
+      cell: ({ row }) => <div className="w-30">{row.getValue('name')}</div>,
       enableSorting: false,
       enableHiding: false,
     },
+
     {
-      accessorKey: 'postalCode',
+      accessorKey: 'location',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Postal Code" />
+        <DataTableColumnHeader column={column} title="Location" />
       ),
       cell: ({ row }) => {
-        return <div className="w-[6.25rem]">{row.getValue('postalCode')}</div>;
-      },
-    },
-    {
-      accessorKey: 'city',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="City" />
-      ),
-      cell: ({ row }) => {
+        const location = row.getValue('location') as { streetAddress: string };
         return (
-          <div className="flex w-[6.25rem] items-center">
-            <span className="capitalize">{row.getValue('city')}</span>
+          <div className="flex items-center">
+            <span className="capitalize">{location?.streetAddress}</span>
           </div>
         );
       },
-      filterFn: (row, id, value) => {
-        return Array.isArray(value) && value.includes(row.getValue(id));
-      },
+      // filterFn: (row, id, value) => {
+      //   return Array.isArray(value) && value.includes(row.getValue(id)?.name);
+      // },
     },
+
     {
-      accessorKey: 'stateProvince',
+      accessorKey: 'managerName',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="State Province" />
+        <DataTableColumnHeader column={column} title="Manager" />
       ),
       cell: ({ row }) => {
         return (
           <div className="flex items-center">
-            <span className="capitalize">{row.getValue('stateProvince')}</span>
-          </div>
-        );
-      },
-      filterFn: (row, id, value) => {
-        return Array.isArray(value) && value.includes(row.getValue(id));
-      },
-    },
-    {
-      accessorKey: 'countryName',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Country" />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center">
-            <span className="capitalize">{row.getValue('countryName')}</span>
+            <span className="capitalize">{row.getValue('managerName')}</span>
           </div>
         );
       },
@@ -116,37 +96,37 @@ export function getColumns(): ColumnDef<Location>[] {
       id: 'actions',
       cell: function Cell({ row }) {
         const [isUpdatePending, startUpdateTransition] = React.useTransition();
-        // const [showUpdateLocationSheet, setShowUpdateLocationSheet] =
+        // const [showUpdateDepartmentSheet, setShowUpdateDepartmentSheet] =
         //   React.useState(false);
-        const [showCreateLocationDialog, setShowCreateLocationDialog] =
+        const [showCreateDepartmentDialog, setShowCreateDepartmentDialog] =
           React.useState(false);
-        const [showDeleteLocationDialog, setShowDeleteLocationDialog] =
+        const [showDeleteDepartmentDialog, setShowDeleteDepartmentDialog] =
           React.useState(false);
 
         return (
           <>
-            {/* <UpdateLocationSheet
-              open={showUpdateLocationSheet}
-              onOpenChange={setShowUpdateLocationSheet}
-              location={row.original}
+            {/* <UpdateDepartmentSheet
+              open={showUpdateDepartmentSheet}
+              onOpenChange={setShowUpdateDepartmentSheet}
+              department={row.original}
             /> */}
-            <DeleteLocationsDialog
-              open={showDeleteLocationDialog}
-              onOpenChange={setShowDeleteLocationDialog}
-              locations={[row.original]}
+            <DeleteDepartmentsDialog
+              open={showDeleteDepartmentDialog}
+              onOpenChange={setShowDeleteDepartmentDialog}
+              departments={[row.original]}
               showTrigger={false}
               onSuccess={() => row.toggleSelected(false)}
             />
 
-            <CreateLocationDialog
-              openDialog={showCreateLocationDialog}
+            <CreateDepartmentDialog
+              openDialog={showCreateDepartmentDialog}
               isEdit={true}
               editData={row.original}
             />
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setShowDeleteLocationDialog(true)}
+              onClick={() => setShowDeleteDepartmentDialog(true)}
             >
               <TrashIcon className="h-4 w-4" />
             </Button>
@@ -163,12 +143,12 @@ export function getColumns(): ColumnDef<Location>[] {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuItem>
-                  <CreateLocationDialog isEdit={true} editData={row.original} />
+                  <CreateDepartmentDialog isEdit={true} editData={row.original} />
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onSelect={() => setShowDeleteLocationDialog(true)}
+                  onSelect={() => setShowDeleteDepartmentDialog(true)}
                 >
                   Delete
                   <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>

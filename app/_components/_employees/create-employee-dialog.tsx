@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Pencil2Icon, PlusIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { type Location } from '@/types/types-locations';
+import { type Employee } from '@/types/types-employees';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,61 +29,57 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 
-import { createLocation, updateLocation } from '../../_lib/_locations/actions';
+import { createEmployee, updateEmployee } from '../../_lib/_employees/actions';
 import {
-  createLocationSchema,
-  type CreateLocationSchema,
-} from '../../_lib/_locations/validations';
-import { CreateLocationForm } from './create-location-form';
+  createEmployeeSchema,
+  type CreateEmployeeSchema,
+} from '../../_lib/_employees/validations';
+import { CreateEmployeeForm } from './create-employee-form';
 
-export function CreateLocationDialog({
+export function CreateEmployeeDialog({
   openDialog = false,
   isEdit = false,
   editData = undefined,
 }: {
   openDialog?: boolean;
   isEdit?: boolean;
-  editData?: Location;
+  editData?: Employee;
 }) {
   const [open, setOpen] = React.useState(false);
   const [isCreatePending, startCreateTransition] = React.useTransition();
   const isDesktop = useMediaQuery('(min-width: 640px)');
   if (openDialog) setOpen(openDialog);
-  const form = useForm<CreateLocationSchema>({
-    resolver: zodResolver(createLocationSchema),
+  const form = useForm<CreateEmployeeSchema>({
+    resolver: zodResolver(createEmployeeSchema),
     defaultValues: {
-      streetAddress: editData?.streetAddress ?? '',
-      postalCode: editData?.postalCode ?? '',
-      city: editData?.city ?? '',
-      stateProvince: editData?.stateProvince ?? '',
-      countryId: editData?.countryId ?? 1,
+      name: editData?.name ?? '',
+      managerId: editData?.managerId ?? 0,
+      locationId: editData?.locationId ?? 0,
     },
   });
   // Use useEffect to reset form values when editData changes
   React.useEffect(() => {
     form.reset({
-      streetAddress: editData?.streetAddress ?? '',
-      postalCode: editData?.postalCode ?? '',
-      city: editData?.city ?? '',
-      stateProvince: editData?.stateProvince ?? '',
-      countryId: editData?.countryId ?? 1,
+      name: editData?.name ?? '',
+      managerId: editData?.managerId ?? 0,
+      locationId: editData?.locationId ?? 0,
     });
   }, [editData, form]);
-  function onSubmit(input: CreateLocationSchema) {
+  function onSubmit(input: CreateEmployeeSchema) {
     startCreateTransition(async () => {
       if (!isEdit) {
-        const { error } = await createLocation(input);
+        const { error } = await createEmployee(input);
         if (error) {
           toast.error(error);
           return;
         }
         form.reset();
         setOpen(false);
-        toast.success('Location created');
+        toast.success('Employee created');
       }
       if (isEdit) {
         startCreateTransition(async () => {
-          const { error } = await updateLocation({
+          const { error } = await updateEmployee({
             id: editData?.id ?? 0,
             ...input,
           });
@@ -95,7 +91,7 @@ export function CreateLocationDialog({
 
           form.reset();
           // props.onOpenChange?.(false);
-          toast.success('Location updated');
+          toast.success('Employee updated');
         });
       }
     });
@@ -108,7 +104,7 @@ export function CreateLocationDialog({
         {!isEdit ? (
           <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
             <PlusIcon className="mr-2 size-4" aria-hidden="true" />
-            New Location
+            New Employee
           </Button>
         ) : (
           <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
@@ -120,14 +116,14 @@ export function CreateLocationDialog({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {/* {isEdit ? 'Update Location' : ' Create Location'} */}
+              {isEdit ? 'Update Employee' : ' Create Employee'}
             </DialogTitle>
             <DialogDescription>
               Fill in the details below to {isEdit ? ' update' : ' create'} a
-              Location.
+              Employee.
             </DialogDescription>
           </DialogHeader>
-          <CreateLocationForm form={form} onSubmit={onSubmit}>
+          <CreateEmployeeForm form={form} onSubmit={onSubmit}>
             <DialogFooter className="gap-2 pt-2 sm:space-x-0">
               <DialogClose asChild>
                 <Button type="button" variant="outline">
@@ -144,7 +140,7 @@ export function CreateLocationDialog({
                 {isEdit ? 'Update' : 'Create'}
               </Button>
             </DialogFooter>
-          </CreateLocationForm>
+          </CreateEmployeeForm>
         </DialogContent>
       </Dialog>
     );
@@ -154,19 +150,19 @@ export function CreateLocationDialog({
       <DrawerTrigger asChild>
         <Button variant="ghost" size="sm">
           <Pencil2Icon className="mr-2 size-4" aria-hidden="true" />
-          {/* <PlusIcon className="mr-2 size-4" aria-hidden="true" />
-          {isEdit ? 'Update Location' : 'New Location'} */}
+          {/* <PlusIcon className="mr-2 size-4" aria-hidden="true" /> */}
+          {/* {isEdit ? 'Update Employee' : 'New Employee'} */}
         </Button>
       </DrawerTrigger>
 
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>
-            {isEdit ? 'Update Location' : ' Create Location'}
+            {isEdit ? 'Update Employee' : ' Create Employee'}
           </DrawerTitle>
           <DrawerDescription>
             Fill in the details below to {isEdit ? ' update ' : ' create'} a
-            Location.
+            Employee.
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="gap-2 sm:space-x-0">

@@ -25,12 +25,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 
-import { updateTask } from '../_lib/actions';
-import { getPriorityIcon, getStatusIcon } from '../_lib/utils';
+// import { updateTask } from '../_lib/actions';
+// import { getPriorityIcon, getStatusIcon } from '../_lib/utils';
 import { DeleteTasksDialog } from './delete-tasks-dialog';
 import { UpdateTaskSheet } from './update-task-sheet';
 import { tasks } from '@/db/constent';
 import { Task } from '@/types';
+import { getPriorityIcon, getStatusIcon } from '@/app/_lib/_tasks/utils';
+import { updateTask } from '@/app/_lib/_tasks/actions';
 
 export function getColumns(): ColumnDef<Task>[] {
   return [

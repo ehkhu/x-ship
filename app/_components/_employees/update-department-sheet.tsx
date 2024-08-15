@@ -26,11 +26,11 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
-import { Location } from '@/types/types-locations';
+import { Employee } from '@/types/types-employees';
 import {
-  updateLocationSchema,
-  UpdateLocationSchema,
-} from '@/app/_lib/_locations/validations';
+  updateEmployeeSchema,
+  UpdateEmployeeSchema,
+} from '@/app/_lib/_employees/validations';
 import {
   Popover,
   PopoverContent,
@@ -49,40 +49,39 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { updateLocation } from '@/app/_lib/_locations/actions';
+import { updateEmployee } from '@/app/_lib/_employees/actions';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface UpdateLocationSheetProps
+interface UpdateEmployeeSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
-  location: Location;
+  employee: Employee;
 }
 
 const fetcher = (...args: [RequestInfo, RequestInit?]): Promise<any> =>
   fetch(...args).then((res) => res.json());
-export function UpdateLocationSheet({
-  location,
+export function UpdateEmployeeSheet({
+  employee,
   ...props
-}: UpdateLocationSheetProps) {
+}: UpdateEmployeeSheetProps) {
   const [isUpdatePending, startUpdateTransition] = React.useTransition();
+  console.log('employee', employee);
 
-  let form = useForm<UpdateLocationSchema>({
-    resolver: zodResolver(updateLocationSchema),
-    defaultValues: location.id
+  let form = useForm<UpdateEmployeeSchema>({
+    resolver: zodResolver(updateEmployeeSchema),
+    defaultValues: employee.id
       ? {
-          streetAddress: location.streetAddress ?? '',
-          postalCode: location.postalCode ?? '',
-          city: location.city ?? '',
-          stateProvince: location.stateProvince ?? '',
-          countryId: location.countryId ?? 1,
+          name: employee.name ?? '',
+          managerId: employee.managerId ?? 1,
+          locationId: employee.locationId ?? 1,
         }
       : {},
   });
-
-  function onSubmit(input: UpdateLocationSchema) {
+  console.log(form);
+  function onSubmit(input: UpdateEmployeeSchema) {
     startUpdateTransition(async () => {
-      const { error } = await updateLocation({
-        id: location.id,
+      const { error } = await updateEmployee({
+        id: employee.id,
         ...input,
       });
 
@@ -93,16 +92,16 @@ export function UpdateLocationSheet({
 
       form.reset();
       props.onOpenChange?.(false);
-      toast.success('Location updated');
+      toast.success('Employee updated');
     });
   }
 
-  //fech countries
+  //fech employee
   const {
-    data: countries,
+    data: employees,
     error,
     isLoading,
-  } = useSWR('/api/countries', fetcher);
+  } = useSWR('/api/employees', fetcher);
 
   // If there was an error fetching the data, display a message
   if (error) return <div>Failed to load countries</div>;
@@ -122,9 +121,9 @@ export function UpdateLocationSheet({
     <Sheet {...props}>
       <SheetContent className="flex flex-col gap-6 sm:max-w-md">
         <SheetHeader className="text-left">
-          <SheetTitle>Update location</SheetTitle>
+          <SheetTitle>Update employee</SheetTitle>
           <SheetDescription>
-            Update the location details and save the changes
+            Update the employee details and save the changes
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
@@ -134,7 +133,7 @@ export function UpdateLocationSheet({
           >
             <FormField
               control={form.control}
-              name="streetAddress"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Street Address</FormLabel>
@@ -151,58 +150,7 @@ export function UpdateLocationSheet({
             />
             <FormField
               control={form.control}
-              name="postalCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Postal Code</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Postal Code"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="city"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="stateProvince"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>State Provience</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="State"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="countryId"
+              name="locationId"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Country</FormLabel>
@@ -218,7 +166,7 @@ export function UpdateLocationSheet({
                           )}
                         >
                           {field.value
-                            ? countries.find(
+                            ? employees.find(
                                 (country: any) => country.value === field.value
                               )?.label
                             : 'Select country'}
@@ -228,16 +176,16 @@ export function UpdateLocationSheet({
                     </PopoverTrigger>
                     <PopoverContent className="w-[200px] p-0">
                       <Command>
-                        <CommandInput placeholder="Search country..." />
+                        <CommandInput placeholder="Search employee..." />
                         <CommandList>
                           <CommandEmpty>No country found.</CommandEmpty>
                           <CommandGroup>
-                            {countries.map((country: any) => (
+                            {employees.map((country: any) => (
                               <CommandItem
                                 value={country.label}
                                 key={country.value}
                                 onSelect={() => {
-                                  form.setValue('countryId', country.value);
+                                  form.setValue('locationId', country.value);
                                 }}
                               >
                                 <Check

@@ -1,18 +1,3 @@
-/*
-  model Location {
-    id            Int     @id @default(autoincrement())
-    streetAddress String?
-    postalCode    String?
-    city          String
-    stateProvince String?
-    countryId     Int?
-
-    // Relations
-    country     Country?     @relation(fields: [countryId], references: [id])
-    departments Department[]
-  }
-*/
-
 // Define the Task type based on the table structure
 export type Location = {
   id: number;

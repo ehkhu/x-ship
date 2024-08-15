@@ -27,23 +27,21 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
-
-import { deleteTasks } from '../_lib/actions';
-import { Task } from '@/types';
-
-interface DeleteTasksDialogProps
+import { deleteEmployees } from '@/app/_lib/_employees/actions';
+import { Employee } from '@/types/types-employees';
+interface DeleteEmployeesDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
-  tasks: Row<Task>['original'][];
+  employees: Row<Employee>['original'][];
   showTrigger?: boolean;
   onSuccess?: () => void;
 }
 
-export function DeleteTasksDialog({
-  tasks,
+export function DeleteEmployeesDialog({
+  employees,
   showTrigger = true,
   onSuccess,
   ...props
-}: DeleteTasksDialogProps) {
+}: DeleteEmployeesDialogProps) {
   const [isDeletePending, startDeleteTransition] = React.useTransition();
   const isDesktop = useMediaQuery('(min-width: 640px)');
 
@@ -51,8 +49,8 @@ export function DeleteTasksDialog({
     console.log('on delete');
     startDeleteTransition(async () => {
       console.log('start delete transition');
-      const { error } = await deleteTasks({
-        ids: tasks.map((task) => task.id),
+      const { error } = await deleteEmployees({
+        ids: employees.map((employee) => employee.id),
       });
 
       if (error) {
@@ -61,7 +59,7 @@ export function DeleteTasksDialog({
       }
 
       props.onOpenChange?.(false);
-      toast.success('Tasks deleted');
+      toast.success('Employees deleted');
       onSuccess?.();
     });
   }
@@ -73,7 +71,7 @@ export function DeleteTasksDialog({
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
               <TrashIcon className="mr-2 size-4" aria-hidden="true" />
-              Delete ({tasks.length})
+              Delete ({employees.length})
             </Button>
           </DialogTrigger>
         ) : null}
@@ -82,8 +80,9 @@ export function DeleteTasksDialog({
             <DialogTitle>Are you absolutely sure?</DialogTitle>
             <DialogDescription>
               This action cannot be undone. This will permanently delete your{' '}
-              <span className="font-medium">{tasks.length}</span>
-              {tasks.length === 1 ? ' task' : ' tasks'} from our servers.
+              <span className="font-medium">{employees.length}</span>
+              {employees.length === 1 ? ' employee' : ' employees'} from our
+              servers.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:space-x-0">
@@ -116,7 +115,7 @@ export function DeleteTasksDialog({
         <DrawerTrigger asChild>
           <Button variant="outline" size="sm">
             <TrashIcon className="mr-2 size-4" aria-hidden="true" />
-            Delete ({tasks.length})
+            Delete ({employees.length})
           </Button>
         </DrawerTrigger>
       ) : null}
@@ -125,8 +124,9 @@ export function DeleteTasksDialog({
           <DrawerTitle>Are you absolutely sure?</DrawerTitle>
           <DrawerDescription>
             This action cannot be undone. This will permanently delete your{' '}
-            <span className="font-medium">{tasks.length}</span>
-            {tasks.length === 1 ? ' task' : ' tasks'} from our servers.
+            <span className="font-medium">{employees.length}</span>
+            {employees.length === 1 ? ' employee' : ' employees'} from our
+            servers.
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="gap-2 sm:space-x-0">

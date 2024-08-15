@@ -10,8 +10,8 @@ import { DataTableAdvancedToolbar } from '@/components/data-table/advanced/data-
 import { DataTable } from '@/components/data-table/data-table';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
 
-import { type getTasks } from '../_lib/queries';
-import { getPriorityIcon, getStatusIcon } from '../_lib/utils';
+import { type getTasks } from '@/app/_lib/_tasks/queries';
+import { getPriorityIcon, getStatusIcon } from '@/app/_lib/_tasks/utils';
 import { getColumns } from './tasks-table-columns';
 import { TasksTableFloatingBar } from './tasks-table-floating-bar';
 import { useTasksTable } from './tasks-table-provider';

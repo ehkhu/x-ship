@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Pencil2Icon, PlusIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { type Location } from '@/types/types-locations';
+import { type Department } from '@/types/types-departments';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,61 +29,60 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 
-import { createLocation, updateLocation } from '../../_lib/_locations/actions';
 import {
-  createLocationSchema,
-  type CreateLocationSchema,
-} from '../../_lib/_locations/validations';
-import { CreateLocationForm } from './create-location-form';
+  createDepartment,
+  updateDepartment,
+} from '../../_lib/_departments/actions';
+import {
+  createDepartmentSchema,
+  type CreateDepartmentSchema,
+} from '../../_lib/_departments/validations';
+import { CreateDepartmentForm } from './create-department-form';
 
-export function CreateLocationDialog({
+export function CreateDepartmentDialog({
   openDialog = false,
   isEdit = false,
   editData = undefined,
 }: {
   openDialog?: boolean;
   isEdit?: boolean;
-  editData?: Location;
+  editData?: Department;
 }) {
   const [open, setOpen] = React.useState(false);
   const [isCreatePending, startCreateTransition] = React.useTransition();
   const isDesktop = useMediaQuery('(min-width: 640px)');
   if (openDialog) setOpen(openDialog);
-  const form = useForm<CreateLocationSchema>({
-    resolver: zodResolver(createLocationSchema),
+  const form = useForm<CreateDepartmentSchema>({
+    resolver: zodResolver(createDepartmentSchema),
     defaultValues: {
-      streetAddress: editData?.streetAddress ?? '',
-      postalCode: editData?.postalCode ?? '',
-      city: editData?.city ?? '',
-      stateProvince: editData?.stateProvince ?? '',
-      countryId: editData?.countryId ?? 1,
+      name: editData?.name ?? '',
+      managerId: editData?.managerId ?? 0,
+      locationId: editData?.locationId ?? 0,
     },
   });
   // Use useEffect to reset form values when editData changes
   React.useEffect(() => {
     form.reset({
-      streetAddress: editData?.streetAddress ?? '',
-      postalCode: editData?.postalCode ?? '',
-      city: editData?.city ?? '',
-      stateProvince: editData?.stateProvince ?? '',
-      countryId: editData?.countryId ?? 1,
+      name: editData?.name ?? '',
+      managerId: editData?.managerId ?? 0,
+      locationId: editData?.locationId ?? 0,
     });
   }, [editData, form]);
-  function onSubmit(input: CreateLocationSchema) {
+  function onSubmit(input: CreateDepartmentSchema) {
     startCreateTransition(async () => {
       if (!isEdit) {
-        const { error } = await createLocation(input);
+        const { error } = await createDepartment(input);
         if (error) {
           toast.error(error);
           return;
         }
         form.reset();
         setOpen(false);
-        toast.success('Location created');
+        toast.success('Department created');
       }
       if (isEdit) {
         startCreateTransition(async () => {
-          const { error } = await updateLocation({
+          const { error } = await updateDepartment({
             id: editData?.id ?? 0,
             ...input,
           });
@@ -95,7 +94,7 @@ export function CreateLocationDialog({
 
           form.reset();
           // props.onOpenChange?.(false);
-          toast.success('Location updated');
+          toast.success('Department updated');
         });
       }
     });
@@ -108,7 +107,7 @@ export function CreateLocationDialog({
         {!isEdit ? (
           <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
             <PlusIcon className="mr-2 size-4" aria-hidden="true" />
-            New Location
+            New Department
           </Button>
         ) : (
           <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
@@ -120,14 +119,14 @@ export function CreateLocationDialog({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {/* {isEdit ? 'Update Location' : ' Create Location'} */}
+              {isEdit ? 'Update Department' : ' Create Department'}
             </DialogTitle>
             <DialogDescription>
               Fill in the details below to {isEdit ? ' update' : ' create'} a
-              Location.
+              Department.
             </DialogDescription>
           </DialogHeader>
-          <CreateLocationForm form={form} onSubmit={onSubmit}>
+          <CreateDepartmentForm form={form} onSubmit={onSubmit}>
             <DialogFooter className="gap-2 pt-2 sm:space-x-0">
               <DialogClose asChild>
                 <Button type="button" variant="outline">
@@ -144,7 +143,7 @@ export function CreateLocationDialog({
                 {isEdit ? 'Update' : 'Create'}
               </Button>
             </DialogFooter>
-          </CreateLocationForm>
+          </CreateDepartmentForm>
         </DialogContent>
       </Dialog>
     );
@@ -154,19 +153,19 @@ export function CreateLocationDialog({
       <DrawerTrigger asChild>
         <Button variant="ghost" size="sm">
           <Pencil2Icon className="mr-2 size-4" aria-hidden="true" />
-          {/* <PlusIcon className="mr-2 size-4" aria-hidden="true" />
-          {isEdit ? 'Update Location' : 'New Location'} */}
+          {/* <PlusIcon className="mr-2 size-4" aria-hidden="true" /> */}
+          {/* {isEdit ? 'Update Department' : 'New Department'} */}
         </Button>
       </DrawerTrigger>
 
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>
-            {isEdit ? 'Update Location' : ' Create Location'}
+            {isEdit ? 'Update Department' : ' Create Department'}
           </DrawerTitle>
           <DrawerDescription>
             Fill in the details below to {isEdit ? ' update ' : ' create'} a
-            Location.
+            Department.
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="gap-2 sm:space-x-0">

@@ -1,25 +1,16 @@
 import * as React from 'react';
 
 import {
-  ArrowUpIcon,
-  CheckCircledIcon,
   Cross2Icon,
   DownloadIcon,
   ReloadIcon,
   TrashIcon,
 } from '@radix-ui/react-icons';
-import { SelectTrigger } from '@radix-ui/react-select';
 import { type Table } from '@tanstack/react-table';
 import { toast } from 'sonner';
 
 import { exportTableToCSV } from '@/lib/export';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import {
   Tooltip,
@@ -27,16 +18,16 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Kbd } from '@/components/kbd';
+import { Employee } from '@/types/types-employees';
+import { deleteEmployees } from '@/app/_lib/_employees/actions';
 
-import { deleteTasks, updateTasks } from '../_lib/actions';
-import { Task } from '@/types';
-import { tasks } from '@/db/constent';
-
-interface TasksTableFloatingBarProps {
-  table: Table<Task>;
+interface EmployeesTableFloatingBarProps {
+  table: Table<Employee>;
 }
 
-export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
+export function EmployeesTableFloatingBar({
+  table,
+}: EmployeesTableFloatingBarProps) {
   const rows = table.getFilteredSelectedRowModel().rows;
 
   const [isPending, startTransition] = React.useTransition();
@@ -89,123 +80,6 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
           </div>
           <Separator orientation="vertical" className="hidden h-5 sm:block" />
           <div className="flex items-center gap-1.5">
-            <Select
-              onValueChange={(value: Task['status']) => {
-                setMethod('update-status');
-
-                startTransition(async () => {
-                  const { error } = await updateTasks({
-                    ids: rows.map((row) => row.original.id),
-                    status: value,
-                  });
-
-                  if (error) {
-                    toast.error(error);
-                    return;
-                  }
-
-                  toast.success('Tasks updated');
-                });
-              }}
-            >
-              <Tooltip delayDuration={250}>
-                <SelectTrigger asChild>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="secondary"
-                      size="icon"
-                      className="size-7 border data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
-                      disabled={isPending}
-                    >
-                      {isPending && method === 'update-status' ? (
-                        <ReloadIcon
-                          className="size-3.5 animate-spin"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <CheckCircledIcon
-                          className="size-3.5"
-                          aria-hidden="true"
-                        />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                </SelectTrigger>
-                <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                  <p>Update status</p>
-                </TooltipContent>
-              </Tooltip>
-              <SelectContent align="center">
-                <SelectGroup>
-                  {tasks.status.enumValues.map((status) => (
-                    <SelectItem
-                      key={status}
-                      value={status}
-                      className="capitalize"
-                    >
-                      {status}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Select
-              onValueChange={(value: Task['priority']) => {
-                setMethod('update-priority');
-
-                startTransition(async () => {
-                  const { error } = await updateTasks({
-                    ids: rows.map((row) => row.original.id),
-                    priority: value,
-                  });
-
-                  if (error) {
-                    toast.error(error);
-                    return;
-                  }
-
-                  toast.success('Tasks updated');
-                });
-              }}
-            >
-              <Tooltip delayDuration={250}>
-                <SelectTrigger asChild>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="secondary"
-                      size="icon"
-                      className="size-7 border data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
-                      disabled={isPending}
-                    >
-                      {isPending && method === 'update-priority' ? (
-                        <ReloadIcon
-                          className="size-3.5 animate-spin"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <ArrowUpIcon className="size-3.5" aria-hidden="true" />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                </SelectTrigger>
-                <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                  <p>Update priority</p>
-                </TooltipContent>
-              </Tooltip>
-              <SelectContent align="center">
-                <SelectGroup>
-                  {tasks.priority.enumValues.map((priority) => (
-                    <SelectItem
-                      key={priority}
-                      value={priority}
-                      className="capitalize"
-                    >
-                      {priority}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
             <Tooltip delayDuration={250}>
               <TooltipTrigger asChild>
                 <Button
@@ -235,7 +109,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                 </Button>
               </TooltipTrigger>
               <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                <p>Export tasks</p>
+                <p>Export employees</p>
               </TooltipContent>
             </Tooltip>
             <Tooltip delayDuration={250}>
@@ -249,7 +123,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
 
                     startTransition(async () => {
                       console.log('start delete transition');
-                      const { error } = await deleteTasks({
+                      const { error } = await deleteEmployees({
                         ids: rows.map((row) => row.original.id),
                       });
 
@@ -274,7 +148,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                 </Button>
               </TooltipTrigger>
               <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                <p>Delete tasks</p>
+                <p>Delete employees</p>
               </TooltipContent>
             </Tooltip>
           </div>

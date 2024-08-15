@@ -34,10 +34,15 @@ import {
 } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
 
-import { updateTask } from '../_lib/actions';
-import { updateTaskSchema, type UpdateTaskSchema } from '../_lib/validations';
+// import { updateTask } from '../_lib/actions';
+// import { updateTaskSchema, type UpdateTaskSchema } from '../_lib/validations';
 import { Task } from '@/types';
 import { tasks } from '@/db/constent';
+import {
+  updateTaskSchema,
+  UpdateTaskSchema,
+} from '@/app/_lib/_tasks/validations';
+import { updateTask } from '@/app/_lib/_tasks/actions';
 
 interface UpdateTaskSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {

@@ -2,41 +2,37 @@
 
 import * as React from 'react';
 import type { SearchParams } from '@/types';
-
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
 import { DateRangePicker } from '@/components/date-range-picker';
 import { Shell } from '@/components/shell';
-import { TasksTableProvider } from '@/app/_components/_tasks/tasks-table-provider';
-import { searchParamsSchema } from '@/app/_lib/_tasks/validations';
-import { getTasks } from '@/app/_lib/_tasks/queries';
-import { TasksTable } from '@/app/_components/_tasks/tasks-table';
-
-// import { TasksTable } from '@/app';
-// import { TasksTableProvider } from '../../_components/tasks-table-provider';
-// import { getTasks } from '../../_lib/queries';
-// import { searchParamsSchema } from '../../_lib/validations';
+// import { DepartmentsTableProvider } from '@/app/_components/_departments/departments-table-provider';
+import { getDepartments } from '@/app/_lib/_departments/queries';
+// import { DepartmentsTable } from '@/app/_components/_departments/departments-table';
+import { searchDepartmentParamsSchema } from '@/app/_lib/_departments/validations';
+import { DepartmentsTableProvider } from '@/app/_components/_departments/departments-table-provider';
+import { DepartmentsTable } from '@/app/_components/_departments/departments-table';
 
 export interface IndexPageProps {
   searchParams: SearchParams;
 }
 
 export default async function IndexPage({ searchParams }: IndexPageProps) {
-  const search = searchParamsSchema.parse(searchParams);
+  const search = searchDepartmentParamsSchema.parse(searchParams);
 
-  const tasksPromise = getTasks(search);
+  const departmentsPromise = getDepartments(search);
 
   return (
     <Shell className="gap-2">
       {/**
-       * The `TasksTableProvider` is use to enable some feature flags for the `TasksTable` component.
-       * Feel free to remove this, as it's not required for the `TasksTable` component to work.
+       * The `DepartmentsTableProvider` is use to enable some feature flags for the `DepartmentsTable` component.
+       * Feel free to remove this, as it's not required for the `DepartmentsTable` component to work.
        */}
-      <TasksTableProvider>
+      <DepartmentsTableProvider>
         {/**
          * The `DateRangePicker` component is used to render the date range picker UI.
-         * It is used to filter the tasks based on the selected date range it was created at.
-         * The business logic for filtering the tasks based on the selected date range is handled inside the component.
+         * It is used to filter the departments based on the selected date range it was created at.
+         * The business logic for filtering the departments based on the selected date range is handled inside the component.
          */}
         <React.Suspense fallback={<Skeleton className="h-7 w-52" />}>
           <DateRangePicker
@@ -60,9 +56,9 @@ export default async function IndexPage({ searchParams }: IndexPageProps) {
            * Passing promises and consuming them using React.use for triggering the suspense fallback.
            * @see https://react.dev/reference/react/use
            */}
-          <TasksTable tasksPromise={tasksPromise} />
+          <DepartmentsTable departmentsPromise={departmentsPromise} />
         </React.Suspense>
-      </TasksTableProvider>
+      </DepartmentsTableProvider>
     </Shell>
   );
 }

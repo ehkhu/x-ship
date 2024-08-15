@@ -1,13 +1,13 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { PlusIcon, ReloadIcon } from "@radix-ui/react-icons"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
+import * as React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { PlusIcon, ReloadIcon } from '@radix-ui/react-icons';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { Button } from "@/components/ui/button"
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog';
 import {
   Drawer,
   DrawerClose,
@@ -27,34 +27,37 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer"
+} from '@/components/ui/drawer';
 
-import { createTask } from "../_lib/actions"
-import { createTaskSchema, type CreateTaskSchema } from "../_lib/validations"
-import { CreateTaskForm } from "./create-task-form"
+import { CreateTaskForm } from './create-task-form';
+import {
+  createTaskSchema,
+  CreateTaskSchema,
+} from '@/app/_lib/_tasks/validations';
+import { createTask } from '@/app/_lib/_tasks/actions';
 
 export function CreateTaskDialog() {
-  const [open, setOpen] = React.useState(false)
-  const [isCreatePending, startCreateTransition] = React.useTransition()
-  const isDesktop = useMediaQuery("(min-width: 640px)")
+  const [open, setOpen] = React.useState(false);
+  const [isCreatePending, startCreateTransition] = React.useTransition();
+  const isDesktop = useMediaQuery('(min-width: 640px)');
 
   const form = useForm<CreateTaskSchema>({
     resolver: zodResolver(createTaskSchema),
-  })
+  });
 
   function onSubmit(input: CreateTaskSchema) {
     startCreateTransition(async () => {
-      const { error } = await createTask(input)
+      const { error } = await createTask(input);
 
       if (error) {
-        toast.error(error)
-        return
+        toast.error(error);
+        return;
       }
 
-      form.reset()
-      setOpen(false)
-      toast.success("Task created")
-    })
+      form.reset();
+      setOpen(false);
+      toast.success('Task created');
+    });
   }
 
   if (isDesktop)
@@ -93,7 +96,7 @@ export function CreateTaskDialog() {
           </CreateTaskForm>
         </DialogContent>
       </Dialog>
-    )
+    );
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -127,5 +130,5 @@ export function CreateTaskDialog() {
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  )
+  );
 }

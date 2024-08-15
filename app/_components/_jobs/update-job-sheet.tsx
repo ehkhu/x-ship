@@ -30,9 +30,6 @@ import { Job } from '@/types/types-jobs';
 import { updateJobSchema, UpdateJobSchema } from '@/app/_lib/_jobs/validations';
 
 import { updateJob } from '@/app/_lib/_jobs/actions';
-// import { updateJobSchema, type UpdateJobSchema } from '../_lib/validations';
-// import { Job } from '@/types';
-// import { jobs } from '@/db/constent';
 
 interface UpdateJobSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
@@ -51,6 +48,15 @@ export function UpdateJobSheet({ job, ...props }: UpdateJobSheetProps) {
       maxSalary: job.maxSalary ?? 0,
     },
   });
+  // Use useEffect to reset form values when editData changes
+  React.useEffect(() => {
+    form.reset({
+      code: job.code ?? 'JOB-',
+      jobTitle: job.jobTitle,
+      minSalary: job.minSalary ?? 0,
+      maxSalary: job.maxSalary ?? 0,
+    });
+  }, [job]);
 
   function onSubmit(input: UpdateJobSchema) {
     startUpdateTransition(async () => {
