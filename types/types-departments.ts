@@ -1,4 +1,5 @@
 import { Employee } from './types-employees';
+import { JobHistory } from './types-jobHistory';
 import { Location } from './types-locations';
 
 // Define the Task type based on the table structure
@@ -9,9 +10,9 @@ export type Department = {
   locationId?: number | null;
 
   // Relations
-  employees: Employee[];
+  employees?: Employee[];
   location?: Location | null;
-  jobHistorys: JobHistory[];
+  jobHistorys?: JobHistory[];
 };
 
 // Define the NewTask type for insert operations
@@ -39,13 +40,9 @@ export interface GetTableSchema {
   to?: string;
 }
 
-export type JobHistory = {
-  // Define JobHistory fields here
-};
-
 // Define the type for the API response
 
-export interface ApiResponseJob {
+export interface ApiResponseDepartment {
   data: Department[];
   pageCount: number;
 }

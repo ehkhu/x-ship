@@ -9,6 +9,8 @@ import { Employee } from '@/types/types-employees';
 import { DeleteEmployeesDialog } from './delete-employee-dialog';
 
 import { CreateEmployeeDialog } from './create-employee-dialog';
+import Link from 'next/link';
+import { PlusIcon } from 'lucide-react';
 
 interface EmployeesTableToolbarActionsProps {
   table: Table<Employee>;
@@ -27,7 +29,17 @@ export function EmployeesTableToolbarActions({
           onSuccess={() => table.toggleAllRowsSelected(false)}
         />
       ) : null}
-      <CreateEmployeeDialog />
+      {/* <CreateEmployeeDialog /> */}
+      <Link
+        href={'/employees/create'}
+        className="flex items-center gap-2"
+        passHref={true}
+      >
+        <Button variant="outline" size="sm">
+          <PlusIcon className="mr-2 size-4" aria-hidden="true" />
+          New Employee
+        </Button>
+      </Link>
       <Button
         variant="outline"
         size="sm"

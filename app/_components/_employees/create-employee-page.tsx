@@ -8,16 +8,7 @@ import { toast } from 'sonner';
 import { type Employee } from '@/types/types-employees';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+
 import {
   Drawer,
   DrawerClose,
@@ -35,39 +26,41 @@ import {
   type CreateEmployeeSchema,
 } from '../../_lib/_employees/validations';
 import { CreateEmployeeForm } from './create-employee-form';
-import { format } from 'date-fns';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import Link from 'next/link';
 
-export function CreateEmployeeDialog({
-  openDialog = false,
+export function CreateEmployeeCard({
   isEdit = false,
   editData = undefined,
 }: {
-  openDialog?: boolean;
+  openCard?: boolean;
   isEdit?: boolean;
   editData?: Employee;
 }) {
   const [open, setOpen] = React.useState(false);
   const [isCreatePending, startCreateTransition] = React.useTransition();
   const isDesktop = useMediaQuery('(min-width: 640px)');
-  if (openDialog) setOpen(openDialog);
-  // let formattedDate = editData?.hireDate
-  //   ? format(new Date(editData?.hireDate + ''), 'dd/MM/yyyy') // Choose a specific format like dd/MM/yyyy
-  //   : format(new Date(), 'dd/MM/yyyy'); // Choose a specific format like dd/MM/yyyy;
-
   const form = useForm<CreateEmployeeSchema>({
     resolver: zodResolver(createEmployeeSchema),
     defaultValues: {
-      name: editData?.name ?? '',
+      name: editData?.name ?? undefined,
       email: editData?.email ?? '',
       phoneNumber: editData?.phoneNumber ?? '',
       hireDate: editData?.hireDate
         ? new Date(editData?.hireDate + '')
         : undefined,
-      jobId: editData?.jobId ?? 0,
-      salary: editData?.salary ?? 0,
-      commissionPct: editData?.commissionPct ?? 0,
-      managerId: editData?.managerId ?? 0,
-      departmentId: editData?.departmentId ?? 0,
+      jobId: editData?.jobId ?? undefined,
+      salary: editData?.salary ?? undefined,
+      commissionPct: editData?.commissionPct ?? undefined,
+      managerId: editData?.managerId ?? undefined,
+      departmentId: editData?.departmentId ?? undefined,
 
       nameInKaren: editData?.nameInKaren ?? '',
       nameInBurmese: editData?.nameInBurmese ?? '',
@@ -92,8 +85,8 @@ export function CreateEmployeeDialog({
         : undefined,
       employeeCode: editData?.employeeCode ?? '',
       gradeLevel: editData?.gradeLevel ?? '',
-      currentContractPeriod: editData?.currentContractPeriod ?? 0,
-      propationPeriod: editData?.propationPeriod ?? 0,
+      currentContractPeriod: editData?.currentContractPeriod ?? undefined,
+      propationPeriod: editData?.propationPeriod ?? undefined,
       trainingLevel: editData?.trainingLevel ?? '',
       workloads: editData?.workloads ?? '',
     },
@@ -101,17 +94,17 @@ export function CreateEmployeeDialog({
   // Use useEffect to reset form values when editData changes
   React.useEffect(() => {
     form.reset({
-      name: editData?.name ?? '',
+      name: editData?.name ?? undefined,
       email: editData?.email ?? '',
       phoneNumber: editData?.phoneNumber ?? '',
       hireDate: editData?.hireDate
         ? new Date(editData?.hireDate + '')
         : undefined,
-      jobId: editData?.jobId ?? 0,
-      salary: editData?.salary ?? 0,
-      commissionPct: editData?.commissionPct ?? 0,
-      managerId: editData?.managerId ?? 0,
-      departmentId: editData?.departmentId ?? 0,
+      jobId: editData?.jobId ?? undefined,
+      salary: editData?.salary ?? undefined,
+      commissionPct: editData?.commissionPct ?? undefined,
+      managerId: editData?.managerId ?? undefined,
+      departmentId: editData?.departmentId ?? undefined,
 
       nameInKaren: editData?.nameInKaren ?? '',
       nameInBurmese: editData?.nameInBurmese ?? '',
@@ -136,13 +129,14 @@ export function CreateEmployeeDialog({
         : undefined,
       employeeCode: editData?.employeeCode ?? '',
       gradeLevel: editData?.gradeLevel ?? '',
-      currentContractPeriod: editData?.currentContractPeriod ?? 0,
-      propationPeriod: editData?.propationPeriod ?? 0,
+      currentContractPeriod: editData?.currentContractPeriod ?? undefined,
+      propationPeriod: editData?.propationPeriod ?? undefined,
       trainingLevel: editData?.trainingLevel ?? '',
       workloads: editData?.workloads ?? '',
     });
   }, [editData, form]);
   function onSubmit(input: CreateEmployeeSchema) {
+    console.log('submit');
     startCreateTransition(async () => {
       if (!isEdit) {
         const { error } = await createEmployee(input);
@@ -178,37 +172,24 @@ export function CreateEmployeeDialog({
 
   if (isDesktop)
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        {/* <DialogTrigger asChild> */}
-        {!isEdit ? (
-          <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-            <PlusIcon className="mr-2 size-4" aria-hidden="true" />
-            New Employee
-          </Button>
-        ) : (
-          <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
-            {/* <PlusIcon className="mr-2 size-4" aria-hidden="true" /> */}
-            <Pencil2Icon className="h-4 w-4" />
-          </Button>
-        )}
-        {/* </DialogTrigger> */}
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
+      <Card>
+        <CardContent>
+          <CardHeader className="px-0">
+            <CardTitle>
               {isEdit ? 'Update Employee' : ' Create Employee'}
-            </DialogTitle>
-            <DialogDescription>
+            </CardTitle>
+            <CardDescription>
               Fill in the details below to {isEdit ? ' update' : ' create'} a
               Employee.
-            </DialogDescription>
-          </DialogHeader>
+            </CardDescription>
+          </CardHeader>
           <CreateEmployeeForm form={form} onSubmit={onSubmit}>
-            <DialogFooter className="gap-2 pt-2 sm:space-x-0">
-              <DialogClose asChild>
+            <CardFooter className="flex-row-reverse gap-2 p-0 pt-2 sm:space-x-0">
+              <Link href="/employees">
                 <Button type="button" variant="outline">
                   Cancel
                 </Button>
-              </DialogClose>
+              </Link>
               <Button disabled={isCreatePending}>
                 {isCreatePending && (
                   <ReloadIcon
@@ -218,10 +199,10 @@ export function CreateEmployeeDialog({
                 )}
                 {isEdit ? 'Update' : 'Create'}
               </Button>
-            </DialogFooter>
+            </CardFooter>
           </CreateEmployeeForm>
-        </DialogContent>
-      </Dialog>
+        </CardContent>
+      </Card>
     );
 
   return (

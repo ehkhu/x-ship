@@ -59,7 +59,7 @@ export default function RootLayout({
             {/* side nav */}
             <SideNav></SideNav>
           </div>
-          <div className="mt-auto p-4">
+          <div className="mt-auto p-4 px-2 text-sm font-medium lg:px-4">
             {/* <Card x-chunk="dashboard-02-chunk-0">
               <CardHeader className="p-2 pt-0 md:p-4">
                 <CardTitle>Upgrade to Pro</CardTitle>
@@ -74,10 +74,13 @@ export default function RootLayout({
                 </Button>
               </CardContent>
             </Card> */}
-            <Button size="sm" className="w-full">
-              <UserCog className="mr-2 h-4 w-4" />
+            <Link
+              href="/users"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+            >
+              <UserCog className="h-4 w-4" />
               Users
-            </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -98,10 +101,13 @@ export default function RootLayout({
               {/* mobile side nav */}
               <MobileSideNav></MobileSideNav>
               <div className="mt-auto">
-                <Button size="sm" className="w-full">
-                  <UserCog className="mr-2 h-4 w-4" />
+                <Link
+                  href="/users"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                >
+                  <UserCog className="h-4 w-4" />
                   Users
-                </Button>
+                </Link>
                 {/* <Card>
                   <CardHeader>
                     <CardTitle>Upgrade to Pro</CardTitle>

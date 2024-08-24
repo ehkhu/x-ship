@@ -13,13 +13,7 @@ export async function seedEmployees(input: { count: number }) {
 
   try {
     /*
-    const allEmployees: Employee[] = [];
-    for (let i = 0; i < count; i++) {
-      allEmployees.push(generateRandomEmployee());
-    }
-    await prisma.Employee.deleteMany();
-    console.log('📝 Inserting Employees', allEmployees.length);
-    await prisma.Employee.createMany({ data: allEmployees }).onConflictDoNothing();
+    code go here
     */
   } catch (err) {
     console.error(err);
@@ -39,8 +33,32 @@ export async function createEmployee(input: CreateEmployeeSchema) {
       commissionPct,
       managerId,
       departmentId,
+      nameInKaren,
+      nameInBurmese,
+      dateOfBirth,
+      fatherName,
+      motherName,
+      gender,
+      nationality,
+      ethnicity,
+      religion,
+      bloodType,
+      typeOfId,
+      idNumber,
+      homeAddress,
+      currentAddress,
+      emergencyContactInfo,
+      placeCodeNo,
+      enrollInKNUDate,
+      employeeCode,
+      gradeLevel,
+      currentContractPeriod,
+      propationPeriod,
+      trainingLevel,
+      workloads,
     } = input;
     const parsedHireDate = hireDate ? new Date(hireDate) : '';
+    const parsedDateOfBirth = dateOfBirth ? new Date(dateOfBirth) : '';
     const employee = await prisma.employee.create({
       data: {
         name,
@@ -52,6 +70,29 @@ export async function createEmployee(input: CreateEmployeeSchema) {
         commissionPct,
         managerId,
         departmentId,
+        nameInKaren,
+        nameInBurmese,
+        dateOfBirth: parsedDateOfBirth,
+        fatherName,
+        motherName,
+        gender,
+        nationality,
+        ethnicity,
+        religion,
+        bloodType,
+        typeOfId,
+        idNumber,
+        homeAddress,
+        currentAddress,
+        emergencyContactInfo,
+        placeCodeNo,
+        enrollInKNUDate,
+        employeeCode,
+        gradeLevel,
+        currentContractPeriod,
+        propationPeriod,
+        trainingLevel,
+        workloads,
       },
     });
 
@@ -87,6 +128,32 @@ export async function updateEmployee(
         commissionPct: input.commissionPct,
         managerId: input.managerId,
         departmentId: input.departmentId,
+
+        nameInKaren: input.nameInKaren,
+        nameInBurmese: input.nameInBurmese,
+        dateOfBirth: input.dateOfBirth ? new Date(input.dateOfBirth) : '',
+        fatherName: input.fatherName,
+        motherName: input.motherName,
+        gender: input.gender,
+        nationality: input.nationality,
+        ethnicity: input.ethnicity,
+        religion: input.religion,
+        bloodType: input.bloodType,
+        typeOfId: input.typeOfId,
+        idNumber: input.idNumber,
+        homeAddress: input.homeAddress,
+        currentAddress: input.currentAddress,
+        emergencyContactInfo: input.emergencyContactInfo,
+        placeCodeNo: input.placeCodeNo,
+        enrollInKNUDate: input.enrollInKNUDate
+          ? new Date(input.enrollInKNUDate)
+          : '',
+        employeeCode: input.employeeCode,
+        gradeLevel: input.gradeLevel,
+        currentContractPeriod: input.currentContractPeriod,
+        propationPeriod: input.propationPeriod,
+        trainingLevel: input.trainingLevel,
+        workloads: input.workloads,
       },
     });
 
@@ -115,6 +182,29 @@ export async function updateEmployees(input: {
   commissionPct?: number;
   managerId?: number;
   departmentId?: number;
+  nameInKaren?: string;
+  nameInBurmese?: string;
+  dateOfBirth?: string;
+  fatherName?: string;
+  motherName?: string;
+  gender?: string;
+  nationality?: string;
+  ethnicity?: string;
+  religion?: string;
+  bloodType?: string;
+  typeOfId?: string;
+  idNumber?: string;
+  homeAddress?: string;
+  currentAddress?: string;
+  emergencyContactInfo?: string;
+  placeCodeNo?: string;
+  enrollInKNUDate?: string;
+  employeeCode?: string;
+  gradeLevel?: string;
+  currentContractPeriod?: number;
+  propationPeriod?: number;
+  trainingLevel?: string;
+  workloads?: string;
 }) {
   noStore();
   try {
@@ -135,6 +225,32 @@ export async function updateEmployees(input: {
         commissionPct: input.commissionPct,
         managerId: input.managerId,
         departmentId: input.departmentId,
+
+        nameInKaren: input.nameInKaren,
+        nameInBurmese: input.nameInBurmese,
+        dateOfBirth: input.dateOfBirth ? new Date(input.dateOfBirth) : '',
+        fatherName: input.fatherName,
+        motherName: input.motherName,
+        gender: input.gender,
+        nationality: input.nationality,
+        ethnicity: input.ethnicity,
+        religion: input.religion,
+        bloodType: input.bloodType,
+        typeOfId: input.typeOfId,
+        idNumber: input.idNumber,
+        homeAddress: input.homeAddress,
+        currentAddress: input.currentAddress,
+        emergencyContactInfo: input.emergencyContactInfo,
+        placeCodeNo: input.placeCodeNo,
+        enrollInKNUDate: input.enrollInKNUDate
+          ? new Date(input.enrollInKNUDate)
+          : '',
+        employeeCode: input.employeeCode,
+        gradeLevel: input.gradeLevel,
+        currentContractPeriod: input.currentContractPeriod ?? 0,
+        propationPeriod: input.propationPeriod,
+        trainingLevel: input.trainingLevel,
+        workloads: input.workloads,
       },
     });
 

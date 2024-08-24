@@ -9,7 +9,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 
 import { fontMono, fontSans } from '@/lib/fonts';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: 'X Ship Next App',

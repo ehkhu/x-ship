@@ -3,10 +3,12 @@ import { Inter as FontSans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { fontMono, fontSans } from '@/lib/fonts';
-import { Toaster } from '@/components/ui/toaster';
+
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 import { ThemeProvider } from '@/components/providers';
 import { SiteHeader } from '@/components/layouts/site-header';
+import { Toaster } from '@/components/ui/sonner';
+// import { Toaster } from 'sonner';
 // setting up font
 // const fontSans = FontSans({
 //   subsets: ['latin'],

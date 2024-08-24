@@ -45,6 +45,11 @@ enum TaskPriority {
   high
 }
 
+enum Gender {
+  male
+  female
+}
+
 // District table
 model District {
   id        Int        @id @default(autoincrement())
@@ -114,17 +119,42 @@ model Department {
 }
 
 model Employee {
-  id            Int      @id @default(autoincrement())
-  name          String?  @db.VarChar(20)
-  email         String   @db.VarChar(25)
-  phoneNumber   String?  @db.VarChar(20)
-  hireDate      DateTime @db.Date
-  jobId         Int?
-  salary        Float?
-  commissionPct Float?
-  managerId     Int?
-  departmentId  Int?
+  id                    Int       @id @default(autoincrement())
+  name                  String?   @db.VarChar(20)
+  email                 String    @db.VarChar(25)
+  phoneNumber           String?   @db.VarChar(20)
+  hireDate              DateTime  @db.Date
+  jobId                 Int?
+  salary                Float?
+  commissionPct         Float?
+  managerId             Int?
+  departmentId          Int?
+  nameInKaren           String?   @db.VarChar(20)
+  nameInBurmese         String?   @db.VarChar(20)
+  dateOfBirth           DateTime? @db.Date
+  fatherName            String?   @db.VarChar(20)
+  motherName            String?   @db.VarChar(20)
+  gender                String?   @db.VarChar(20)
+  nationality           String?   @db.VarChar(20)
+  ethnicity             String?   @db.VarChar(20)
+  religion              String?   @db.VarChar(20)
+  bloodType             String?   @db.VarChar(20)
+  typeOfId              String?   @db.VarChar(20)
+  idNumber              String?   @db.VarChar(20)
+  homeAddress           String?   @db.VarChar(20)
+  currentAddress        String?   @db.VarChar(20)
+  emergencyContactInfo  String?   @db.VarChar(20)
+  placeCodeNo           String?   @db.VarChar(20)
+  enrollInKNUDate       DateTime? @db.Date
+  employeeCode          String?   @db.VarChar(20)
+  gradeLevel            String?   @db.VarChar(20)
+  currentContractPeriod Int?
+  propationPeriod       Int?
+  trainingLevel         String?   @db.VarChar(20)
+  workloads             String?   @db.VarChar(20)
 
+  createdAt    DateTime?    @default(now())
+  updatedAt    DateTime?    @updatedAt
   // Relations
   department   Department?  @relation(fields: [departmentId], references: [id])
   job          Job?         @relation(fields: [jobId], references: [id])

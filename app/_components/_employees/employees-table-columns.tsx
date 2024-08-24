@@ -1,11 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  CircleBackslashIcon,
-  DotsHorizontalIcon,
-  TrashIcon,
-} from '@radix-ui/react-icons';
+import { CircleBackslashIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -20,8 +16,10 @@ import {
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import { Employee } from '@/types/types-employees';
 import { DeleteEmployeesDialog } from './delete-employee-dialog';
-import { CreateEmployeeDialog } from './create-employee-dialog';
+// import { CreateEmployeeDialog } from './create-employee-dialog';
 import { format } from 'date-fns';
+import Link from 'next/link';
+import { PencilIcon, TrashIcon } from 'lucide-react';
 
 export function getColumns(): ColumnDef<Employee>[] {
   return [
@@ -57,8 +55,8 @@ export function getColumns(): ColumnDef<Employee>[] {
       cell: ({ row }) => (
         <div className="w-30 font-medium truncate">{row.getValue('name')}</div>
       ),
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       accessorKey: 'email',
@@ -68,8 +66,8 @@ export function getColumns(): ColumnDef<Employee>[] {
       cell: ({ row }) => (
         <div className="w-30 truncate">{row.getValue('email')}</div>
       ),
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       accessorKey: 'phoneNumber',
@@ -79,8 +77,8 @@ export function getColumns(): ColumnDef<Employee>[] {
       cell: ({ row }) => (
         <div className="w-30 truncate">{row.getValue('phoneNumber')}</div>
       ),
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       accessorKey: 'hireDate',
@@ -92,13 +90,13 @@ export function getColumns(): ColumnDef<Employee>[] {
 
         // Define a consistent format for both server and client
         const formattedDate = hireDate
-          ? format(new Date(hireDate), 'dd/MM/yyyy') // Choose a specific format like dd/MM/yyyy
+          ? format(new Date(hireDate + ''), 'dd/MM/yyyy') // Choose a specific format like dd/MM/yyyy
           : 'N/A';
 
         return <div className="w-30 truncate">{formattedDate}</div>;
       },
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       accessorKey: 'job',
@@ -114,7 +112,7 @@ export function getColumns(): ColumnDef<Employee>[] {
         );
       },
       enableSorting: false,
-      enableHiding: false,
+      enableHiding: true,
     },
     {
       accessorKey: 'salary',
@@ -124,8 +122,8 @@ export function getColumns(): ColumnDef<Employee>[] {
       cell: ({ row }) => (
         <div className="w-30 truncate">{row.getValue('salary')}</div>
       ),
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       accessorKey: 'commissionPct',
@@ -135,8 +133,8 @@ export function getColumns(): ColumnDef<Employee>[] {
       cell: ({ row }) => (
         <div className="w-30 truncate">{row.getValue('commissionPct')}</div>
       ),
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
     },
 
     {
@@ -187,19 +185,32 @@ export function getColumns(): ColumnDef<Employee>[] {
               showTrigger={false}
               onSuccess={() => row.toggleSelected(false)}
             />
-
-            <CreateEmployeeDialog
-              openDialog={showCreateEmployeeDialog}
-              isEdit={true}
-              editData={row.original}
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowDeleteEmployeeDialog(true)}
-            >
-              <TrashIcon className="h-4 w-4" />
-            </Button>
+            <div className="flex">
+              {/* <CreateEmployeeDialog
+                openDialog={showCreateEmployeeDialog}
+                isEdit={true}
+                editData={row.original}
+              /> */}
+              <Link
+                href={'/employees/1/edit'}
+                className="flex items-center gap-2"
+                passHref={true}
+              >
+                <Button variant="ghost" size="sm">
+                  <PencilIcon
+                    className="opacity-50 size-4"
+                    aria-hidden="true"
+                  />
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowDeleteEmployeeDialog(true)}
+              >
+                <TrashIcon className="opacity-50 size-4" aria-hidden="true" />
+              </Button>
+            </div>
 
             {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>

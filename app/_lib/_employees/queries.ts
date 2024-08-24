@@ -71,7 +71,7 @@ export async function getEmployees(input: GetEmployeesSchema) {
       }),
     ]);
 
-    console.log(employees);
+    // console.log(employees);
     return {
       data: employees,
       pageCount: Math.ceil(total / per_page),

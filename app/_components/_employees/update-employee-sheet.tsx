@@ -72,8 +72,14 @@ export function UpdateEmployeeSheet({
     defaultValues: employee.id
       ? {
           name: employee.name ?? '',
-          managerId: employee.managerId ?? 1,
-          locationId: employee.locationId ?? 1,
+          email: employee.email ?? '',
+          phoneNumber: employee.phoneNumber ?? '',
+          hireDate: employee.hireDate ?? '',
+          jobId: employee.jobId ?? 0,
+          salary: employee.salary ?? 0,
+          commissionPct: employee.commissionPct ?? 0,
+          managerId: employee.managerId ?? 0,
+          departmentId: employee.departmentId ?? 0,
         }
       : {},
   });
@@ -150,7 +156,7 @@ export function UpdateEmployeeSheet({
             />
             <FormField
               control={form.control}
-              name="locationId"
+              name="departmentId"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Country</FormLabel>
@@ -178,14 +184,14 @@ export function UpdateEmployeeSheet({
                       <Command>
                         <CommandInput placeholder="Search employee..." />
                         <CommandList>
-                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandEmpty>No department found.</CommandEmpty>
                           <CommandGroup>
                             {employees.map((country: any) => (
                               <CommandItem
                                 value={country.label}
                                 key={country.value}
                                 onSelect={() => {
-                                  form.setValue('locationId', country.value);
+                                  form.setValue('departmentId', country.value);
                                 }}
                               >
                                 <Check
