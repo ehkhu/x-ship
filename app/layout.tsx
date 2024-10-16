@@ -14,10 +14,10 @@ import { Toaster } from '@/components/ui/sonner';
 //   subsets: ['latin'],
 //   variable: '--font-sans',
 // });
-
+const appName = process.env.APP_NAME;
 export const metadata: Metadata = {
-  title: 'X Ship Next App',
-  description: 'Make your next app with X Ship',
+  title: appName,
+  description: '',
 };
 
 export const viewport: Viewport = {

@@ -23,7 +23,7 @@ export default function NotFoundPage() {
           <div className="intro-x text-lg mt-3">
             You may have mistyped the address or the page may have moved.
           </div>
-          <Button className="intro-x btn py-3 px-4 border-white dark:border-darkmode-400 dark:text-slate-200 mt-10">
+          <Button className="intro-x btn py-3 px-4 border-white dark:border-darkmode-400 mt-10">
             <Link href="/dashboard">Back to Home</Link>
           </Button>
         </div>

@@ -13,193 +13,885 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Task {
-  id        String       @id @default(uuid()) // Use UUID for id
-  code      String       @unique
-  title     String?
-  status    TaskStatus
-  label     TaskLabel
-  priority  TaskPriority
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @default(now())
+model Division {
+  id        Int     @id @default(autoincrement())
+  divId     String? @unique @map("DIV_ID") @db.VarChar(7)
+  divName   String? @map("DIV_NAME") @db.VarChar(100)
+  divNameMM String? @map("DIV_NAMEMM") @db.VarChar(225)
+
+  township Township[]
+
+  @@map("tbl_division")
 }
 
-// Enum definitions
-enum TaskStatus {
-  todo
-  in_progress // Use snake_case or camelCase as appropriate
-  done
-  canceled
-}
-
-enum TaskLabel {
-  bug
-  feature
-  enhancement
-  documentation
-}
-
-enum TaskPriority {
-  low
-  medium
-  high
-}
-
-enum Gender {
-  male
-  female
-}
-
-// District table
-model District {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-  code      String     @unique
-  townships Township[]
-  createdAt DateTime?  @default(now())
-  updatedAt DateTime?  @updatedAt
-}
-
-// Township table
 model Township {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
-  code        String    @unique
-  karenNameEn String
-  districtId  Int
-  district    District  @relation(fields: [districtId], references: [id])
-  vthcs       Vthc[]
-  createdAt   DateTime? @default(now())
-  updatedAt   DateTime? @updatedAt
-}
+  id           Int     @id @default(autoincrement())
+  tspId        String? @unique @map("TSP_ID") @db.VarChar(100)
+  tspName      String? @map("TSP_NAME") @db.VarChar(100)
+  tspShortName String? @map("TSP_SHORTNAME") @db.VarChar(100)
+  divId        String? @map("DIV_ID") @db.VarChar(50)
+  tspLat       Float?  @map("TSP_LAT") @db.Double
+  tspLong      Float?  @map("TSP_LONG") @db.Double
 
-model Vthc {
-  id               Int       @id @default(autoincrement())
-  name             String    @unique
-  code             String    @unique
-  townshipCode     String // Foreign key reference to Township table
-  townshipName     String?
-  townshipNameMIMU String?
-  townshipId       Int
-  township         Township  @relation(fields: [townshipId], references: [id])
-  villages         Village[]
-  createdAt        DateTime? @default(now())
-  updatedAt        DateTime? @updatedAt
+  villages Village[]
+
+  division Division? @relation(fields: [divId], references: [divId])
+
+  @@map("tbl_township")
 }
 
 model Village {
-  id       Int     @id @default(autoincrement())
-  name     String  @unique
-  code     String  @unique
-  vthcCode String
-  vthcName String?
-  vtch     Vthc    @relation(fields: [vthcCode], references: [code])
+  id               Int     @id @default(autoincrement())
+  villageCode      String? @unique @map("VILLAGE_CODE") @db.VarChar(20)
+  villageName      String? @map("VILLAGE_NAME") @db.VarChar(100)
+  villageNameMM    String? @map("VILLAGE_NAMEMM") @db.VarChar(100)
+  villageMalePop   Int?    @default(0) @map("VILLAGE_MALEPOP")
+  villageFemalePop Int?    @default(0) @map("VILLAGE_FEMALEPOP")
+  villageLatitude  Float?  @default(0.0) @map("VILLAGE_LATITUDE") @db.Double
+  villageLongitude Float?  @default(0.0) @map("VILLAGE_LONGITUDE") @db.Double
+  villageHousehold Int?    @default(0) @map("VILLAGE_HOUSEHOLD")
+  tspId            String? @map("TSP_ID") @db.VarChar(100)
+  tspIdeho         String? @map("TSP_IDEHO") @db.VarChar(100)
+  villageStatus    Int?    @default(0) @map("VILLAGE_STATUS")
 
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  patients    Patient[]
+  cfrms       Cfrm[]
+  township    Township?    @relation(fields: [tspId], references: [tspId])
+    // Define relationship to VillageOrgProj
+  villageOrgProjs  VillageOrgProj[]
+
+  @@map("tbl_village")
 }
 
-model Country {
-  id          Int        @id @default(autoincrement())
-  countryName String?
-  // Relations
-  locations   Location[]
+model Clinic {
+  id      Int     @id @default(autoincrement())
+  clnId   String? @unique @map("CLN_ID") @db.VarChar(100)
+  clnName String? @map("CLN_NAME") @db.VarChar(100)
+  clnTsp  String? @map("CLN_TSP") @db.VarChar(100)
+  ehoTsp  String? @map("EHO_TSP") @db.VarChar(50)
+  clnPop  Int?    @default(0) @map("CLN_POP") @db.Int
+
+  ancs      Anc[]
+  deliverys Delivery[]
+  pncs      Pnc[]
+  fps       Fp[]
+  rhs       Rh[]
+  gms       Gm[]
+
+  @@map("TBL_CLINIC")
 }
 
-model Department {
-  id         Int    @id @default(autoincrement())
-  name       String
-  managerId  Int?
-  locationId Int?
+model Org {
+  id           Int     @id @default(autoincrement()) @map("ID")
+  orgId        String? @unique @map("ORG_ID") @db.VarChar(10)
+  orgName      String? @map("ORG_NAME") @db.VarChar(100)
+  orgShortName String? @map("ORG_SHORTNAME") @db.VarChar(100)
 
-  // Relations
-  employees   Employee[]
-  location    Location?    @relation(fields: [locationId], references: [id])
-  jobHistorys JobHistory[]
+  patients  Patient[]
+  users     User[]
+  ancs      Anc[]
+  deliverys Delivery[]
+  pncs      Pnc[]
+  fps       Fp[]
+  rhs       Rh[]
+  gms       Gm[]
+  cfrms     Cfrm[]
+
+  @@map("TBL_ORG")
 }
 
-model Employee {
-  id                    Int       @id @default(autoincrement())
-  name                  String?   @db.VarChar(20)
-  email                 String    @db.VarChar(25)
-  phoneNumber           String?   @db.VarChar(20)
-  hireDate              DateTime  @db.Date
-  jobId                 Int?
-  salary                Float?
-  commissionPct         Float?
-  managerId             Int?
-  departmentId          Int?
-  nameInKaren           String?   @db.VarChar(20)
-  nameInBurmese         String?   @db.VarChar(20)
-  dateOfBirth           DateTime? @db.Date
-  fatherName            String?   @db.VarChar(20)
-  motherName            String?   @db.VarChar(20)
-  gender                String?   @db.VarChar(20)
-  nationality           String?   @db.VarChar(20)
-  ethnicity             String?   @db.VarChar(20)
-  religion              String?   @db.VarChar(20)
-  bloodType             String?   @db.VarChar(20)
-  typeOfId              String?   @db.VarChar(20)
-  idNumber              String?   @db.VarChar(20)
-  homeAddress           String?   @db.VarChar(20)
-  currentAddress        String?   @db.VarChar(20)
-  emergencyContactInfo  String?   @db.VarChar(20)
-  placeCodeNo           String?   @db.VarChar(20)
-  enrollInKNUDate       DateTime? @db.Date
-  employeeCode          String?   @db.VarChar(20)
-  gradeLevel            String?   @db.VarChar(20)
-  currentContractPeriod Int?
-  propationPeriod       Int?
-  trainingLevel         String?   @db.VarChar(20)
-  workloads             String?   @db.VarChar(20)
+model Project {
+  projectId          String    @id @map("PROJECT_ID") @db.VarChar(10)
+  projectName        String    @map("PROJECT_NAME") @db.VarChar(100)
+  donorId            String?   @map("DONOR_ID") @db.VarChar(10)
+  projectStartDate   DateTime? @map("PROJECT_STARTDATE") @db.Date
+  projectEndDate     DateTime? @map("PROJECT_ENDDATE") @db.Date
+  projectDescription String?   @map("PROJECT_DESCRIPTION") @db.VarChar(255)
+  projectStatus      Int?      @map("PROJECT_STATUS") @db.Int
 
-  createdAt    DateTime?    @default(now())
-  updatedAt    DateTime?    @updatedAt
-  // Relations
-  department   Department?  @relation(fields: [departmentId], references: [id])
-  job          Job?         @relation(fields: [jobId], references: [id])
-  manager      Employee?    @relation("ManagerEmployee", fields: [managerId], references: [id])
-  subordinates Employee[]   @relation("ManagerEmployee")
-  jobHistory   JobHistory[]
+  cfrms Cfrm[]
+
+  @@map("TBL_PROJECT")
 }
 
-model Job {
+model Donor {
+  donorId        String    @id @map("DONOR_ID") @db.VarChar(10)
+  donorName      String?   @map("DONOR_NAME") @db.VarChar(100)
+  donorShortName String?   @map("DONOR_SHORTNAME") @db.VarChar(10)
+  grantName      String?   @map("GRANT_NAME") @db.VarChar(45)
+  startDate      DateTime? @map("START_DATE") @db.Date
+  endDate        DateTime? @map("END_DATE") @db.Date
+
+  @@map("TBL_DONOR")
+}
+
+model User {
+  userId       Int       @id @default(autoincrement()) @map("USER_ID") @db.Int
+  userFullName String?   @map("USER_FULL_NAME") @db.VarChar(100)
+  userOrg      String?   @map("USER_ORG") @db.VarChar(100)
+  userName     String?   @unique @map("USER_NAME") @db.VarChar(100)
+  userType     String?   @map("USER_TYPE") @db.VarChar(100)
+  userPassword String?   @map("USER_PASSWORD") @db.VarChar(1000)
+  createdBy    String?   @map("CREATED_BY") @db.VarChar(100)
+  createdDate  DateTime? @map("CREATED_DATE") @db.Date
+  userStatus   Int?      @map("USER_STATUS") @db.Int
+  userSalt     String?   @map("USER_SALT") @db.VarChar(20)
+  userExpired  DateTime? @map("USER_EXPIRED") @db.Date
+  userCln      String?   @map("USER_CLN") @db.VarChar(20)
+  role         Role?     @relation(fields: [roleId], references: [id])
+  roleId       Int?
+
+  organization Org? @relation(fields: [userOrg], references: [orgId])
+
+  @@map("TBL_USER")
+}
+
+model District {
+  id                Int     @id @default(autoincrement()) @map("ID")
+  knuDistrictCode   String? @map("KNU_District_Code")
+  knuDistrictNameEN String? @map("KNU_District_Name_EN")
+
+  @@map("TBL_DISTRICT")
+}
+
+model EHOTownship {
+  id                Int     @id @default(autoincrement()) @map("ID")
+  knuDistrictCode   String? @map("KNU_District_Code")
+  knuDistrictNameEN String? @map("KNU_District_Name_EN")
+  townshipId        String? @unique @map("Township_ID")
+  townshipName      String? @map("Township_Name")
+
+  @@map("TBL_EHOTOWNSHIP")
+}
+
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  permissions Permission[]
+  users       User[]
+}
+
+model Permission {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  roles Role[]
+}
+
+model Patient {
+  id            Int       @id @default(autoincrement()) @map("ID")
+  regId         String    @unique @map("REGID") @db.VarChar(20)
+  regName       String    @map("REGNAME") @db.VarChar(100)
+  regDate       DateTime  @map("REGDATE") @db.Date
+  regOrg        String    @map("REGORG") @db.VarChar(10)
+  regPlace      Int       @default(999) @map("REGPLACE") @db.Int
+  regVillage    String    @map("REGVILLAGE") @db.VarChar(20)
+  regAge        Int       @default(999) @map("REGAGE") @db.Int
+  regAgeUnit    Int       @default(999) @map("REGAGEUNIT") @db.Int
+  regSex        Int       @default(999) @map("REGSEX") @db.Int
+  regType       Int       @default(999) @map("REGTYPE") @db.Int
+  regEdu        Int       @default(999) @map("REGEDU") @db.Int
+  regJob        String?   @map("REGJOB") @db.VarChar(30)
+  regMarital    Int?      @default(999) @map("REGMARITAL") @db.Int
+  regSpouse     String?   @map("REGSPOUSE") @db.VarChar(30)
+  regMother     String?   @map("REGMOTHER") @db.VarChar(30)
+  regFather     String?   @map("REGFATHER") @db.VarChar(30)
+  regAddress    String?   @map("REGADDRESS") @db.VarChar(100)
+  regPh         String?   @map("REGPH") @db.VarChar(30)
+  regEthnic     String?   @map("REGETHNIC") @db.VarChar(100)
+  regRefFrom    String?   @map("REGREFFROM") @db.VarChar(1000)
+  regRemark     String?   @map("REGREMARK") @db.VarChar(255)
+  regUsrLogin   String?   @map("REGUSRLOGIN") @db.VarChar(100)
+  regInsert     DateTime? @map("REGINSERT") @db.Timestamp(6)
+  regUpdate     DateTime? @map("REGUPDATE") @db.Timestamp(6)
+  regStatus     Int?      @default(0) @map("REGSTATUS") @db.Int
+  regSync       Int?      @default(0) @map("REGSYNC") @db.Int
+  regMigrant    Int?      @default(999) @map("REGMIGRANT") @db.Int
+  regIdp        Int?      @default(999) @map("REGIDP") @db.Int
+  regDsee       Int?      @default(999) @map("REGDSEE") @db.Int
+  regDhear      Int?      @default(999) @map("REGDHEAR") @db.Int
+  regDwalk      Int?      @default(999) @map("REGDWALK") @db.Int
+  regDrembr     Int?      @default(999) @map("REGDREMBR") @db.Int
+  regDwash      Int?      @default(999) @map("REGDWASH") @db.Int
+  regDcommu     Int?      @default(999) @map("REGDCOMMU") @db.Int
+  regEthnicO    String?   @map("REGETHNICO") @db.VarChar(100)
+  regDisability Int?      @default(999) @map("REGDISABILITY") @db.Int
+
+  village      Village? @relation(fields: [regVillage], references: [villageCode])
+  organization Org?     @relation(fields: [regOrg], references: [orgId])
+
+  ancs      Anc[]
+  labs      Lab[]
+  deliverys Delivery[]
+  pncs      Pnc[]
+  fps       Fp[]
+  rhs       Rh[]
+  gms       Gm[]
+
+  @@map("TBL_REG")
+}
+
+model Anc {
+  id                     Int       @id @default(autoincrement()) @map("ID")
+  anRegId                String?   @map("ANREGID") @db.VarChar(20)
+  anProvidedDate         DateTime? @map("ANPROVIDEDDATE") @db.Date
+  anType                 Int?      @default(999) @map("ANTYPE")
+  anDonor                String?   @map("ANDONOR") @db.VarChar(10)
+  anOrg                  String?   @map("ANORG") @db.VarChar(10)
+  anProject              String?   @map("ANPROJECT") @db.VarChar(10)
+  anTsp                  String?   @map("ANTSP") @db.VarChar(100)
+  anPlace                Int?      @default(999) @map("ANPLACE")
+  anVillage              String?   @map("ANVILLAGE") @db.VarChar(20)
+  anProviderName         String?   @map("ANPROVIDERNAME") @db.VarChar(30)
+  anProviderPosition     Int?      @default(999) @map("ANPROVIDERPOSITION")
+  anUsrLogin             String?   @map("ANUSRLOGIN") @db.VarChar(100)
+  anLmp                  DateTime? @map("ANLMP") @db.Date
+  anEdd                  DateTime? @map("ANEDD") @db.Date
+  anFirstMens            Int?      @default(999) @map("ANFIRSTMENS")
+  anMarriage             Int?      @default(999) @map("ANMARRIAGE")
+  anYoungestChild        Int?      @default(999) @map("ANYOUNGESTCHILD")
+  anG                    Int?      @default(999) @map("ANG")
+  anP                    Int?      @default(999) @map("ANP")
+  anA                    Int?      @default(999) @map("ANA")
+  anWt                   Float?    @default(999.90) @map("ANWT") @db.Float
+  anHt                   Float?    @default(999.90) @map("ANHT") @db.Float
+  anBp                   String?   @default("000/00") @map("ANBP") @db.VarChar(10)
+  anPr                   Int?      @default(999) @map("ANPR")
+  anRr                   Int?      @default(999) @map("ANRR")
+  anTemp                 Float?    @default(999.90) @map("ANTEMP") @db.Float
+  anGp                   Int?      @default(999) @map("ANGP")
+  anEdema                Int?      @default(999) @map("ANODEMA")
+  anNoFetus              Int?      @default(999) @map("ANNOFETUS")
+  anLie                  Int?      @default(999) @map("ANLIE")
+  anPresentation         Int?      @default(999) @map("ANPRESENTATION")
+  anFundalHt             Int?      @default(999) @map("ANFUNDALHT")
+  anFhs                  Int?      @default(999) @map("ANFHS")
+  anOther                String?   @map("ANOTHER") @db.VarChar(1000)
+  anLab                  Int?      @default(0) @map("ANLAB")
+  anFa                   Int?      @default(999) @map("ANFA")
+  anFeSo4                Int?      @default(999) @map("ANFESO4")
+  anFc                   Int?      @default(999) @map("ANFC")
+  anB1                   Int?      @default(999) @map("ANB1")
+  anDeworm1              Int?      @default(999) @map("ANDEWORM1")
+  anTt1                  Int?      @default(999) @map("ANTT1")
+  anCdk                  Int?      @default(999) @map("ANCDK")
+  anNbk                  Int?      @default(999) @map("ANNBK")
+  anDirectComplication   Int?      @default(999) @map("ANDIRECTCOMPLICATION")
+  anIndirectComplication Int?      @default(999) @map("ANINDIRECTCOMPLICATION")
+  anIndirectOther        String?   @map("ANINDIRECTOTHER") @db.VarChar(1000)
+  anIndirectDx           String?   @map("ANINDIRECTDX") @db.VarChar(1000)
+  anIndirectTx           String?   @map("ANINDIRECTTX") @db.VarChar(1000)
+  anHe1                  Int?      @default(999) @map("ANHE1")
+  anHe2                  Int?      @default(999) @map("ANHE2")
+  anHe3                  Int?      @default(999) @map("ANHE3")
+  anHe4                  Int?      @default(999) @map("ANHE4")
+  anHe5                  Int?      @default(999) @map("ANHE5")
+  anHe6                  Int?      @default(999) @map("ANHE6")
+  anHe7                  Int?      @default(999) @map("ANHE7")
+  anHe8                  Int?      @default(999) @map("ANHE8")
+  anOutcome              Int?      @default(999) @map("ANOUTCOME")
+  anRefTo                Int?      @default(999) @map("ANREFTO")
+  anRefToOther           String?   @map("ANREFTOOTHER") @db.VarChar(1000)
+  anRefReason            String?   @map("ANREFREASON") @db.VarChar(1000)
+  anDeathReason          String?   @map("ANDEATHREASON") @db.VarChar(1000)
+  anVisit                Int?      @default(999) @map("ANVISIT")
+  anHe9                  Int?      @default(999) @map("ANHE9")
+  anHe10                 Int?      @default(999) @map("ANHE10")
+  anHe11                 Int?      @default(999) @map("ANHE11")
+  anHe12                 Int?      @default(999) @map("ANHE12")
+  anHe13                 Int?      @default(999) @map("ANHE13")
+  anFirstPreg            Int?      @default(999) @map("ANFIRSTPREG")
+  anHygKit               Int?      @default(999) @map("ANHYGKIT")
+  anB1Unit               Int?      @default(999) @map("ANB1UNIT")
+  anAge                  Int?      @default(999) @map("ANAGE")
+  anAgeUnit              Int?      @default(999) @map("ANAGEUNIT")
+  anVtCount              Int?      @default(999) @map("ANVTCOUNT")
+  anTempUnit             Int?      @default(999) @map("ANTEMPUNIT")
+  anVisitSkill           Int?      @default(999) @map("ANVISITSKILL")
+  anVisitTimingSkill     Int?      @default(999) @map("ANVISITTIMINGSKILL")
+  anDeworm2              Int?      @default(999) @map("ANDEWORM2")
+  anTt2                  Int?      @default(999) @map("ANTT2")
+  anClnId                String?   @map("ANCLNID") @db.VarChar(10)
+  anInsert               DateTime? @map("ANINSERT") @db.Timestamp(6)
+  anUpdate               DateTime? @map("ANUPDATE") @db.Timestamp(6)
+  anStatus               Int?      @default(0) @map("ANSTATUS")
+  anSync                 Int?      @default(0) @map("ANSYNC")
+  anVisitTiming          Int?      @map("ANVISITTIMING")
+  anType2                Int?      @default(999) @map("ANTYPE2")
+  anMigrant              Int?      @default(999) @map("ANMIGRANT")
+  anIdp                  Int?      @default(999) @map("ANIDP")
+  anDsee                 Int?      @default(999) @map("ANDSEE")
+  anDhear                Int?      @default(999) @map("ANDHEAR")
+  anDwalk                Int?      @default(999) @map("ANDWALK")
+  anDrembr               Int?      @default(999) @map("ANDREMBR")
+  anDwash                Int?      @default(999) @map("ANDWASH")
+  anDcommu               Int?      @default(999) @map("ANDCOMMU")
+  anDisability           Int?      @default(999) @map("ANDISABILITY")
+  anFaFeSo4              Float?    @default(999) @map("ANFAFESO4") @db.Float
+  patient                Patient?  @relation(fields: [anRegId], references: [regId])
+  clinic                 Clinic?   @relation(fields: [anClnId], references: [clnId])
+  organization           Org?      @relation(fields: [anOrg], references: [orgId])
+
+  @@map("TBL_ANC")
+}
+
+model Lab {
+  id              Int       @id @default(autoincrement()) @map("ID")
+  labRegId        String?   @map("LABREGID") @db.VarChar(20)
+  labProvidedDate DateTime? @map("LABPROVIDEDDATE") @db.Date
+  labPlace        Int?      @default(999) @map("LABPLACE")
+  labVillage      String?   @map("LABVILLAGE") @db.VarChar(20)
+  labRdt          Int?      @default(999) @map("LABRDT")
+  labMicroscopic  Int?      @default(999) @map("LABMICROSCOPIC")
+  labHb           Int?      @default(999) @map("LABHB")
+  labBg           Int?      @default(999) @map("LABBG")
+  labRh           Int?      @default(999) @map("LABRH")
+  labUcg          Int?      @default(999) @map("LABUCG")
+  labUSugar       Int?      @default(999) @map("LABUSUGAR")
+  labUProtein     Int?      @default(999) @map("LABUPROTEIN")
+  labGono         Int?      @default(999) @map("LABGONO")
+  labTricho       Int?      @default(999) @map("LABTRICHO")
+  labCandida      Int?      @default(999) @map("LABCANDIDA")
+  labRpr          Int?      @default(999) @map("LABRPR")
+  labTpha         Int?      @default(999) @map("LABTPHA")
+  labVdrl         Int?      @default(999) @map("LABVDRL")
+  labHiv          Int?      @default(999) @map("LABHIV")
+  labHbv          Int?      @default(999) @map("LABHBV")
+  labHcv          Int?      @default(999) @map("LABHCV")
+  labSsource      String?   @map("LABSSOURCE") @db.VarChar(20)
+  labOther        String?   @map("LABOTHER") @db.VarChar(1000)
+  labRbs          Float?    @default(0.0) @map("LABRBS") @db.Float
+  labOrg          String?   @map("LABORG") @db.VarChar(10)
+  labInsert       DateTime? @map("LABINSERT") @db.Timestamp(6)
+  labUpdate       DateTime? @map("LABUPDATE") @db.Timestamp(6)
+  labStatus       Int?      @default(0) @map("LABSTATUS")
+  labSync         Int?      @default(0) @map("LABSYNC")
+  labTest         Int?      @default(0) @map("LABTEST")
+
+  patient Patient? @relation(fields: [labRegId], references: [regId])
+
+  @@unique([id, labRegId, labProvidedDate, labSsource]) // Composite unique constraint
+  @@map("TBL_LAB")
+}
+
+model VillageOrgProj {
+  id          Int       @id @default(autoincrement()) @map("ID")
+  villageCode String?   @map("VILLAGE_CODE") @db.VarChar(20)
+  orgCode     String?   @map("ORG_CODE") @db.VarChar(10)
+  projCode    String?   @map("PROJ_CODE") @db.VarChar(10)
+  tspCode     String?   @map("TSP_CODE") @db.VarChar(20)
+  clnCode     String?   @map("CLN_CODE") @db.VarChar(20)
+  vopStatus   Int?      @default(0) @map("VOP_STATUS") // BIGINT to Int
+  vopInsert   DateTime? @map("VOP_INSERT") @db.Timestamp(6)
+  vopUpdate   DateTime? @map("VOP_UPDATE") @db.Timestamp(6)
+  vopRemark   String?   @map("VOP_REMARK") @db.VarChar(255)
+  vopVlt      Int?      @default(0) @map("VOP_VLT") // BIGINT to Int
+  vopInfomx   Int?      @default(0) @map("VOP_INFOMX") // BIGINT to Int
+  vopMpop     Int?      @map("VOP_MPOP") // BIGINT to Int
+  vopFpop     Int?      @map("VOP_FPOP") // BIGINT to Int
+  vopHhold    Int?      @map("VOP_HHOLD") // BIGINT to Int
+  // Define relationship to Village
+  village     Village?  @relation(fields: [villageCode], references: [villageCode])
+  @@map("TBL_VILLAGE_ORG_PROJ") // Map model to table name
+}
+
+model Delivery {
+  id                   Int       @id @default(autoincrement())
+  deliRegId            String    @map("DELIREGID") @db.VarChar(20)
+  deliProvidedDate     DateTime  @map("DELIPROVIDEDDATE")
+  deliDonor            String?   @map("DELIDONOR") @db.VarChar(10)
+  deliOrg              String?   @map("DELIORG") @db.VarChar(10)
+  deliProject          String?   @map("DELIPROJECT") @db.VarChar(10)
+  deliTsp              String?   @map("DELITSP") @db.VarChar(100)
+  deliVillage          String?   @map("DELIVILLAGE") @db.VarChar(20)
+  deliProviderName     String?   @map("DELIPROVIDERNAME") @db.VarChar(30)
+  deliProviderPosition Int?      @default(999) @map("DELIPROVIDERPOSITION")
+  deliUsrLogin         String?   @map("DELIUSRLOGIN") @db.VarChar(100)
+  deliDefectOther      String?   @map("DELIDEFECTOTHER") @db.VarChar(1000)
+  deliMComplication    String?   @map("DELIMCOMPLICATION") @db.VarChar(1000)
+  deliMProcedure       String?   @map("DELIMPROCEDURE") @db.VarChar(1000)
+  deliMTx              String?   @map("DELIMTX") @db.VarChar(1000)
+  deliMRefReason       String?   @map("DELIMREFREASON") @db.VarChar(1000)
+  deliMDeathReason     String?   @map("DELIMDEATHREASON") @db.VarChar(1000)
+  deliBRefReason       String?   @map("DELIBREFREASON") @db.VarChar(1000)
+  deliBDeathReason     String?   @map("DELIBDEATHREASON") @db.VarChar(1000)
+  deliAge              Int?      @default(999) @map("DELIAGE")
+  deliType             Int?      @default(999) @map("DELITYPE")
+  deliPlace            Int?      @default(999) @map("DELIPLACE")
+  deliDeliType         Int?      @default(999) @map("DELIDELITYPE")
+  deliGp               Int?      @default(999) @map("DELIGP")
+  deliG                Int?      @default(999) @map("DELIG")
+  deliP                Int?      @default(999) @map("DELIP")
+  deliA                Int?      @default(999) @map("DELIA")
+  deliEpi              Int?      @default(999) @map("DELIEPI")
+  deliDefect           Int?      @default(999) @map("DELIDEFECT")
+  deliPN6              Int?      @default(999) @map("DELIPN6")
+  deliLab              Int?      @default(0) @map("DELILAB")
+  deliMOutcome         Int?      @default(999) @map("DELIMOUTCOME")
+  deliMRefTo           Int?      @default(999) @map("DELIMREFTO")
+  deliBOutcome         Int?      @default(999) @map("DELIBOUTCOME")
+  deliBDeliOutcome     Int?      @default(999) @map("DELIBDELIOUTCOME")
+  deliBSex1            Int?      @default(999) @map("DELIBSEX1")
+  deliBApgar1          Int?      @default(999) @map("DELIBAPGAR1")
+  deliResTowel         Int?      @default(999) @map("DELRESTOWEL")
+  deliResMask          Int?      @default(999) @map("DELIRESMASK")
+  deliResSuction       Int?      @default(999) @map("DELIRESSUCTION")
+  deliResCompression   Int?      @default(999) @map("DELIRESCOMPRESSION")
+  deliResStimulation   Int?      @default(999) @map("DELIRESSTIMULATION")
+  deliBCCut1           Int?      @default(999) @map("DELIBCCUT1")
+  deliBBF1             Int?      @default(999) @map("DELIBBF1")
+  deliBRefTo           Int?      @default(999) @map("DELIBREFTO")
+  deliBWT1             Float?    @default(999.90) @map("DELIBWT1")
+  deliAnSelfRep        Int?      @default(999) @map("DELIANSELFREP")
+  deliPOFDelivery      Int?      @default(999) @map("DELIPOFDELIVERY")
+  deliTemp             Float?    @default(999.90) @map("DELITEMP")
+  deliPR               Int?      @default(999) @map("DELIPR")
+  deliBP               String?   @default("000/00") @map("DELIBP") @db.VarChar(10)
+  deliBSex2            Int?      @default(999) @map("DELIBSEX2")
+  deliBWT2             Float?    @default(999.90) @map("DELIBWT2")
+  deliBBF2             Int?      @default(999) @map("DELIBBF2")
+  deliBBF3             Int?      @default(999) @map("DELIBBF3")
+  deliAgeUnit          Int?      @default(999) @map("DELIAGEUNIT")
+  deliTempUnit         Int?      @default(999) @map("DELITEMPUNIT")
+  deliClnId            String?   @map("DELICLNID") @db.VarChar(10)
+  deliBApgar2          Int?      @default(999) @map("DELIBAPGAR2")
+  deliBApgar3          Int?      @default(999) @map("DELIBAPGAR3")
+  deliBSex3            Int?      @default(999) @map("DELIBSEX3")
+  deliBWT3             Float?    @default(999.90) @map("DELIBWT3")
+  deliBCCut2           Int?      @default(999) @map("DELIBCCUT2")
+  deliBCCut3           Int?      @default(999) @map("DELIBCCUT3")
+  deliAdmissionDate    DateTime? @map("DELIADMISSIONDATE")
+  deliInsert           DateTime? @map("DELIINSERT")
+  deliUpdate           DateTime? @map("DELIUPDATE")
+  deliStatus           Int?      @default(0) @map("DELISTATUS")
+  deliSync             Int?      @default(0) @map("DELISYNC")
+  deliRemark           String?   @map("DELIREMARK") @db.VarChar(255)
+  deliTime             DateTime? @map("DELITIME")
+  deliMigrant          Int?      @default(999) @map("DELIMIGRANT")
+  deliIDP              Int?      @default(999) @map("DELIIDP")
+  deliDSee             Int?      @default(999) @map("DELIDSEE")
+  deliDHear            Int?      @default(999) @map("DELIDHEAR")
+  deliDWalk            Int?      @default(999) @map("DELIDWALK")
+  deliDRembr           Int?      @default(999) @map("DELIDREMBR")
+  deliDWash            Int?      @default(999) @map("DELIDWASH")
+  deliDCommu           Int?      @default(999) @map("DELIDCOMMU")
+  deliDisability       Int?      @default(999) @map("DELIDISABILITY")
+
+  patient      Patient? @relation(fields: [deliRegId], references: [regId])
+  clinic       Clinic?  @relation(fields: [deliClnId], references: [clnId])
+  organization Org?     @relation(fields: [deliOrg], references: [orgId])
+
+  @@map("TBL_DELIVERY")
+}
+
+model Pnc {
+  id                 Int       @id @default(autoincrement())
+  pnRegId            String    @map("PNREGID") @db.VarChar(20)
+  pnProvidedDate     DateTime? @map("PNPROVIDEDDATE")
+  pnAge              Int       @default(999) @map("PNAGE")
+  pnType             Int       @default(999) @map("PNTYPE")
+  pnDonor            String?   @map("PNDONOR") @db.VarChar(10)
+  pnOrg              String?   @map("PNORG") @db.VarChar(10)
+  pnProject          String?   @map("PNPROJECT") @db.VarChar(10)
+  pnTsp              String?   @map("PNTSP") @db.VarChar(100)
+  pnPlace            Int       @default(999) @map("PNPLACE")
+  pnVillage          String?   @map("PNVILLAGE") @db.VarChar(20)
+  pnProviderName     String?   @map("PNPROVIDERNAME") @db.VarChar(30)
+  pnAnSelfRep        Int       @default(999) @map("PNANSELFREP")
+  pnProviderPosition Int       @default(999) @map("PNPROVIDERPOSITION")
+  pnUsrLogin         String?   @map("PNUSRLOGIN") @db.VarChar(100)
+  pnWt               Float     @default(999.90) @map("PNWT")
+  pnHt               Float     @default(999.90) @map("PNHT")
+  pnBp               String?   @default("000/00") @map("PNBP") @db.VarChar(10)
+  pnPr               Int       @default(999) @map("PNPR")
+  pnRr               Int       @default(999) @map("PNRR")
+  pnTemp             Float     @default(999.90) @map("PNTEMP")
+  pnP                Int       @default(999) @map("PNP")
+  pnA                Int       @default(999) @map("PNA")
+  pnAnaemia          Int       @default(999) @map("PNANAEMIA")
+  pnNipple           Int       @default(999) @map("PNNIPPLE")
+  pnUtrContraction   Int       @default(999) @map("PNUTRCONTRACTION")
+  pnVagBleeding      Int       @default(999) @map("PNVAGBLEEDING")
+  pnWoundCond        Int       @default(999) @map("PNWOUNDCOND")
+  pnLab              Int       @default(0) @map("PNLAB")
+  pnSepsis           Int       @default(999) @map("PNSEPSIS")
+  pnPph              Int       @default(999) @map("PNPPH")
+  pnRpoc             Int       @default(999) @map("PNRPOC")
+  pnEclampsia        Int       @default(999) @map("PNECLAMPSIA")
+  pnBtAbscess        Int       @default(999) @map("PNBTABSCESS")
+  pnInf              Int       @default(999) @map("PNINF")
+  pnMalaria          Int       @default(999) @map("PNMALARIA")
+  pnTransfusion      Int       @default(999) @map("PNTRANSFUSION")
+  pnMva              Int       @default(999) @map("PNMVA")
+  pnRemovalPlacenta  Int       @default(999) @map("PNREMOVALPLACENTA")
+  pnOxytocin         Int       @default(999) @map("PNOXYTOCIN")
+  pnAntibioticInj    Int       @default(999) @map("PNANTIBIOTICINJ")
+  pnMiso             Int       @default(999) @map("PNMISO")
+  pnAnticonvulsant   Int       @default(999) @map("PNANTICONVULSANT")
+  pnMalariaTx        Int       @default(999) @map("PNMALARIATX")
+  pnB1               Int       @default(999) @map("PNB1")
+  pnVitA             Int       @default(999) @map("PNVITA")
+  pnFeSo4            Int       @default(999) @map("PNFESO4")
+  pnFp               Int       @default(999) @map("PNFP")
+  pnOutcome          Int       @default(999) @map("PNOUTCOME")
+  pnRefTo            Int       @default(999) @map("PNREFTO")
+  pnRefToOther       String?   @map("PNREFTOOTHER") @db.VarChar(255)
+  pnRefReason        String?   @map("PNREFREASON") @db.VarChar(255)
+  pnDeathReason      String?   @map("PNDEATHREASON") @db.VarChar(255)
+  pnInsert           DateTime? @map("PNINSERT")
+  pnHe               Int       @default(999) @map("PNHE")
+  pnDDeli            DateTime? @map("PNDDELI")
+  pn3Days            Int       @default(999) @map("PN3DAYS")
+  pnB1Unit           Int       @default(999) @map("PNB1UNIT")
+  pnAntibioticPo     Int       @default(999) @map("PNANTIBIOTICPO")
+  pnTeo              Int       @default(999) @map("PNTEO")
+  pnTx               Int       @default(999) @map("PNTX")
+  pnDxOther          String?   @map("PNDXOTHER") @db.VarChar(1000)
+  pnTxOther          String?   @map("PNTXOTHER") @db.VarChar(1000)
+  pnAgeUnit          Int       @default(999) @map("PNAGEUNIT")
+  pnDx               Int       @default(999) @map("PNDX")
+  pnTempUnit         Int       @default(999) @map("PNTEMPUNIT")
+  pnVitAUnit         Int       @default(999) @map("PNVITAUNIT")
+  pnClnId            String?   @map("PNCLNID") @db.VarChar(10)
+  pnUpdate           DateTime? @map("PNUPDATE")
+  pnStatus           Int       @default(0) @map("PNSTATUS")
+  pnSync             Int       @default(0) @map("PNSYNC")
+  pnRemark           String?   @map("PNREMARK") @db.VarChar(1000)
+  pnNbc              Int       @default(0) @map("PNNBC")
+  pnMigrant          Int       @default(999) @map("PNMIGRANT")
+  pnIdp              Int       @default(999) @map("PNIDP")
+  pnDSee             Int       @default(999) @map("PNDSEE")
+  pnDHear            Int       @default(999) @map("PNDHEAR")
+  pnDWalk            Int       @default(999) @map("PNDWALK")
+  pnDRembr           Int       @default(999) @map("PNDREMBR")
+  pnDWash            Int       @default(999) @map("PNDWASH")
+  pnDCommu           Int       @default(999) @map("PNDCOMMU")
+  pnDisability       Int       @default(999) @map("PNDISABILITY")
+  pnBSex1            Int       @default(999) @map("PNBSEX1")
+  pnBSex2            Int       @default(999) @map("PNBSEX2")
+  pnBSex3            Int       @default(999) @map("PNBSEX3")
+
+  patient      Patient? @relation(fields: [pnRegId], references: [regId])
+  clinic       Clinic?  @relation(fields: [pnClnId], references: [clnId])
+  organization Org?     @relation(fields: [pnOrg], references: [orgId])
+
+  @@map("TBL_PNC")
+}
+
+model Fp {
+  id                  Int       @id @default(autoincrement())
+  fpRegId             String    @map("FPREGID") @db.VarChar(20)
+  fpProvidedDate      DateTime? @map("FPPROVIDEDDATE")
+  fpType              Int?       @default(999) @map("FPTYPE")
+  fpDonor             String?   @map("FPDONOR") @db.VarChar(10)
+  fpOrg               String?   @map("FPORG") @db.VarChar(10)
+  fpProject           String?   @map("FPPROJECT") @db.VarChar(10)
+  fpTsp               String?   @map("FPTSP") @db.VarChar(20)
+  fpPlace             Int?       @default(999) @map("FPPLACE")
+  fpVillage           String?   @map("FPVILLAGE") @db.VarChar(20)
+  fpProviderName      String?   @map("FPPROVIDERNAME") @db.VarChar(30)
+  fpProviderPosition  Int?       @default(999) @map("FPPROVIDERPOSITION")
+  fpWt                Float     @default(999.90) @map("FPWT")
+  fpHt                Float     @default(999.90) @map("FPHT")
+  fpBp                String    @default("000/000") @map("FPBP") @db.VarChar(10)
+  fpPr                Int?       @default(999) @map("FPPR")
+  fpRr                Int?       @default(999) @map("FPRR")
+  fpTemp              Float     @default(999.90) @map("FPTEMP")
+  fpFirstMens         Int?       @default(999) @map("FPFIRSTMENS")
+  fpMarriage          Int?       @default(999) @map("FPMARRIAGE")
+  fpYoungestChild     Int?       @default(999) @map("FPYOUNGESTCHILD")
+  fpYoungestChildUnit Int?       @default(999) @map("FPYOUNGESTCHILDUNIT")
+  fpP                 Int?       @default(999) @map("FPP")
+  fpA                 Int?       @default(999) @map("FPA")
+  fpReason            String?   @map("FPREASON") @db.VarChar(255)
+  fpMensCycle         Int?       @default(999) @map("FPMENSCYCLE")
+  fpMensPain          Int?       @default(999) @map("FPMENSPAIN")
+  fpVagBleeding       Int?       @default(999) @map("FPVAGBLEEDING")
+  fpPreference        String?   @map("FPPREFERENCE") @db.VarChar(15)
+  fpLmp               DateTime? @map("FPLMP")
+  fpHisa              Int?       @default(999) @map("FPHISA")
+  fpSexualContact     Int?       @default(999) @map("FPSEXUALCONTACT")
+  fpCurrentMethod     String?   @map("FPCURRENTMETHOD") @db.VarChar(255)
+  fpCurrentMethodDur  String?   @map("FPCURRENTMETHODDUR") @db.VarChar(255)
+  fpCondomM           Int?       @default(999) @map("FPCONDOMM")
+  fpCondomF           Int?       @default(999) @map("FPCONDOMF")
+  fpDepo              Int?       @default(999) @map("FPDEPO")
+  fpCoc               Int?       @default(999) @map("FPCOC")
+  fpPop               Int?       @default(999) @map("FPPOP")
+  fpEc                Int?       @default(999) @map("FPEC")
+  fpImp3              Int?       @default(999) @map("FPIMP3")
+  fpImp4              Int?       @default(999) @map("FPIMP4")
+  fpImp5              Int?       @default(999) @map("FPIMP5")
+  fpIudCu             Int?       @default(999) @map("FPIUDCU")
+  fpIudMulti          Int?       @default(999) @map("FPIUDMULTI")
+  fpNa                Int?       @default(999) @map("FPNA")
+  fpFuDate            DateTime? @map("FPFUDATE")
+  fpRefImp            Int?       @default(999) @map("FPREFIMP")
+  fpRefIud            Int?       @default(999) @map("FPREFIUD")
+  fpRefTl             Int?       @default(999) @map("FPREFTL")
+  fpRefVt             Int?       @default(999) @map("FPREFVT")
+  fpCslFp             Int?       @default(999) @map("FPCSLFP")
+  fpCslFer            Int?       @default(999) @map("FPCSLFER")
+  fpCondomMbk         Int?       @default(999) @map("FPCONDOMMBK")
+  fpCondomFbk         Int?       @default(999) @map("FPCONDOMFBK")
+  fpEcBk              Int?       @default(999) @map("FPECBK")
+  fpOutcome           Int?       @default(999) @map("FPOUTCOME")
+  fpRefTo             Int?       @default(999) @map("FPREFTO")
+  fpDeathReason       String?   @map("FPDEATHREASON") @db.VarChar(255)
+  fpUsrLogin          String?   @map("FPUSRLOGIN") @db.VarChar(30)
+  fpLab               Int?       @default(0) @map("FPLAB")
+  fpInsert            DateTime? @map("FPINSERT")
+  fpOffMethod         String?   @map("FPOFFMETHOD") @db.VarChar(1000)
+  fpRemark            String?   @map("FPREMARK") @db.VarChar(1000)
+  fpAge               Int?       @default(999) @map("FPAGE")
+  fpAgeUnit           Int?       @default(999) @map("FPAGEUNIT")
+  fpTempUnit          Int?       @default(999) @map("FPTEMPUNIT")
+  fpClnId             String?   @map("FPCLNID") @db.VarChar(10)
+  fpDepoSc            Int?       @default(999) @map("FPDEPOSC")
+  fpUpdate            DateTime? @map("FPUPDATE")
+  fpStatus            Int?       @default(0) @map("FPSTATUS")
+  fpSync              Int?       @default(0) @map("FPSYNC")
+  fpRemoval           Int?       @default(999) @map("FPREMOVAL")
+  fpRefReason         String?   @map("FPREFREASON") @db.VarChar(1000)
+  fpRefToOther        String?   @map("FPREFTOOTHER") @db.VarChar(1000)
+  fpImsc              Int?       @default(999) @map("FPIMSC")
+  fpMigrant           Int?       @default(999) @map("FPMIGRANT")
+  fpIdp               Int?       @default(999) @map("FPIDP")
+  fpDSee              Int?       @default(999) @map("FPDSEE")
+  fpDHear             Int?       @default(999) @map("FPDHEAR")
+  fpDWalk             Int?       @default(999) @map("FPDWALK")
+  fpDRembr            Int?       @default(999) @map("FPDREMBR")
+  fpDWash             Int?       @default(999) @map("FPDWASH")
+  fpDCommu            Int?       @default(999) @map("FPDCOMMU")
+  fpPreg              Int?       @default(999) @map("FPPREG")
+  fpLacMother         Int?       @default(999) @map("FPLACMOTHER")
+  fpDisability        Int?       @default(999) @map("FPDISABILITY")
+
+  patient      Patient? @relation(fields: [fpRegId], references: [regId])
+  clinic       Clinic?  @relation(fields: [fpClnId], references: [clnId])
+  organization Org?     @relation(fields: [fpOrg], references: [orgId])
+
+  @@map("TBL_FP")
+}
+
+model Rh {
+  id                 Int       @id @default(autoincrement())
+  rhRegId            String    @map("RHREGID") @db.VarChar(20)
+  rhProvidedDate     DateTime? @map("RHPROVIDEDDATE")
+  rhType             Int       @default(999) @map("RHTYPE")
+  rhDonor            String?   @map("RHDONOR") @db.VarChar(10)
+  rhOrg              String?   @map("RHORG") @db.VarChar(10)
+  rhProject          String?   @map("RHPROJECT") @db.VarChar(10)
+  rhTsp              String?   @map("RHTSP") @db.VarChar(20)
+  rhPlace            Int       @default(999) @map("RHPLACE")
+  rhVillage          String?   @map("RHVILLAGE") @db.VarChar(20)
+  rhProviderName     String?   @map("RHPROVIDERNAME") @db.VarChar(30)
+  rhProviderPosition Int       @default(999) @map("RHPROVIDERPOSITION")
+  rhWt               Float     @default(999.90) @map("RHWT")
+  rhHt               Float     @default(999.90) @map("RHHT")
+  rhBp               String    @default("000/000") @map("RHBP") @db.VarChar(10)
+  rhPr               Int       @default(999) @map("RHPR")
+  rhRr               Int       @default(999) @map("RHRR")
+  rhTemp             Float     @default(999.90) @map("RHTEMP")
+  rhPreg             Int       @default(999) @map("RHPREG")
+  rhLab              Int       @default(0) @map("RHLAB")
+  rhPac              Int       @default(999) @map("RHPAC")
+  rhGvb              Int       @default(999) @map("RHGVB")
+  rhDxOther          String?   @map("RHDXOTHER") @db.VarChar(255)
+  rhProcedure        String?   @map("RHPROCEDURE") @db.VarChar(255)
+  rhTx               String?   @map("RHTX") @db.VarChar(255)
+  rhOutcome          Int       @default(999) @map("RHOUTCOME")
+  rhDeathReason      String?   @map("RHDEATHREASON") @db.VarChar(255)
+  rhRefTo            Int       @default(999) @map("RHREFTO")
+  rhInsert           DateTime? @map("RHINSERT")
+  rhP                Int       @default(999) @map("RHP")
+  rhA                Int       @default(999) @map("RHA")
+  rhHe               Int       @default(999) @map("RHHE")
+  rhAge              Int       @default(999) @map("RHAGE")
+  rhAgeUnit          Int       @default(999) @map("RHAGEUNIT")
+  rhTempUnit         Int       @default(999) @map("RHTEMPUNIT")
+  rhClnId            String?   @map("RHCLNID") @db.VarChar(10)
+  rhRefReason        String?   @map("RHREFREASON") @db.VarChar(255)
+  rhUsrLogin         String?   @map("RHUSRLOGIN") @db.VarChar(30)
+  rhUpdate           DateTime? @map("RHUPDATE")
+  rhStatus           Int       @default(0) @map("RHSTATUS")
+  rhSync             Int       @default(0) @map("RHSYNC")
+  rhRemark           String?   @map("RHREMARK") @db.VarChar(255)
+  rhChiefComplain    String?   @map("RHCHEIFCOMPLAIN") @db.VarChar(1000)
+  rhRefToOther       String?   @map("RHREFTOOTHER") @db.VarChar(1000)
+  rhMigrant          Int       @default(999) @map("RHMIGRANT")
+  rhIdp              Int       @default(999) @map("RHIDP")
+  rhDSee             Int       @default(999) @map("RHDSEE")
+  rhDHear            Int       @default(999) @map("RHDHEAR")
+  rhDWalk            Int       @default(999) @map("RHDWALK")
+  rhDRembr           Int       @default(999) @map("RHDREMBR")
+  rhDWash            Int       @default(999) @map("RHDWASH")
+  rhDCommu           Int       @default(999) @map("RHDCOMMU")
+  rhLacMother        Int       @default(999) @map("RHLACMOTHER")
+  rhDisability       Int       @default(999) @map("RHDISABILITY")
+  rhViar             Int       @default(999) @map("RHVIAR")
+
+  patient      Patient? @relation(fields: [rhRegId], references: [regId])
+  clinic       Clinic?  @relation(fields: [rhClnId], references: [clnId])
+  organization Org?     @relation(fields: [rhOrg], references: [orgId])
+
+  @@map("TBL_RH")
+}
+
+model Diagnosis {
   id        Int     @id @default(autoincrement())
-  code      String?
-  jobTitle  String  @db.VarChar(35)
-  minSalary Int?
-  maxSalary Int?
+  dxCode    Int     @default(0) @map("DXCODE")
+  diagnosis String? @map("DIAGNOSIS") @db.VarChar(255)
+  dxCpi     Int     @default(999) @map("DXCPI")
+  dxChdn    Int     @default(999) @map("DXCHDN")
+  dxSsdf    Int     @default(999) @map("DXSSDF")
+  dxTnth    String? @map("DXTNTH") @db.VarChar(1000)
+  dxMnhc    Int     @default(999) @map("DXMNHC")
+  dxIcd     Int     @default(999) @map("DXICD")
+  dxIcd11   String? @map("DXICD11") @db.VarChar(20)
 
-  // Relations
-  employees  Employee[]
-  jobHistory JobHistory[]
+  @@map("TBL_DIAGNOSIS")
 }
 
-model JobHistory {
-  employeeId   Int
-  startDate    DateTime @db.Date
-  endDate      DateTime @db.Date
-  jobId        Int
-  departmentId Int?
+model Disease {
+  id             Int     @id @default(autoincrement()) @map("ID")
+  disCode        String? @map("DIS_CODE") @db.VarChar(20)
+  disCodeLbl     String? @map("DIS_CODELBL") @db.VarChar(30)
+  disName        String? @map("DIS_NAME") @db.VarChar(255)
+  disDescription String? @map("DIS_DESCRIPTION") @db.VarChar(255)
 
-  // Relations
-  employee   Employee    @relation(fields: [employeeId], references: [id])
-  job        Job         @relation(fields: [jobId], references: [id])
-  department Department? @relation(fields: [departmentId], references: [id])
-
-  // Composite key
-  @@id([employeeId, startDate, endDate])
+  @@map("TBL_DISEASE")
 }
 
-model Location {
-  id            Int     @id @default(autoincrement())
-  streetAddress String?
-  postalCode    String?
-  city          String
-  stateProvince String?
-  countryId     Int?
+model Gm {
+  id                 Int       @id @default(autoincrement())
+  gmRegId            String    @map("GMREGID") @db.VarChar(20)
+  gmAge              Int       @default(999) @map("GMAGE")
+  gmProvidedDate     DateTime? @map("GMPROVIDEDDATE")
+  gmType             Int       @default(999) @map("GMTYPE")
+  gmDonor            String?   @map("GMDONOR") @db.VarChar(10)
+  gmOrg              String?   @map("GMORG") @db.VarChar(10)
+  gmProject          String?   @map("GMPROJECT") @db.VarChar(10)
+  gmTsp              String?   @map("GMTSP") @db.VarChar(20)
+  gmPlace            Int       @default(999) @map("GMPLACE")
+  gmVillage          String?   @map("GMVILLAGE") @db.VarChar(20)
+  gmProviderName     String?   @map("GMPROVIDERNAME") @db.VarChar(30)
+  gmProviderPosition Int       @default(999) @map("GMPROVIDERPOSITION")
+  gmUsrLogin         String?   @map("GMUSRLOGIN") @db.VarChar(30)
+  gmWt               Float     @default(999.90) @map("GMWT")
+  gmHt               Float     @default(999.90) @map("GMHT")
+  gmBp               String    @default("000/000") @map("GMBP") @db.VarChar(15)
+  gmPr               Int       @default(999) @map("GMPR")
+  gmRr               Int       @default(999) @map("GMRR")
+  gmTemp             Float     @default(999.90) @map("GMTEMP")
+  gmP                Int       @default(999) @map("GMP")
+  gmA                Int       @default(999) @map("GMA")
+  gmHe               Int       @default(999) @map("GMHE")
+  gmGmType           Int       @default(999) @map("GMGMTYPE")
+  gmPreg             Int       @default(999) @map("GMPREG")
+  gmLab              Int       @default(0) @map("GMLAB")
+  gmOtherDx          String?   @map("GMOTHERDX") @db.VarChar(1000)
+  gmDx1              Int       @default(999) @map("GMDX1")
+  gmDx2              Int       @default(999) @map("GMDX2")
+  gmDx3              Int       @default(999) @map("GMDX3")
+  gmComplaint        String?   @map("GMCOMPLAINT") @db.VarChar(1000)
+  gmProcedure        String?   @map("GMPROCEDURE") @db.VarChar(1000)
+  gmTx               String?   @map("GMTX") @db.VarChar(1000)
+  gmOutcome          Int       @default(999) @map("GMOUTCOME")
+  gmRefTo            Int       @default(999) @map("GMREFTO")
+  gmRefToOther       String?   @map("GMREFTOOTHER") @db.VarChar(255)
+  gmRefReason        String?   @map("GMREFREASON") @db.VarChar(255)
+  gmDeathReason      String?   @map("GMDEATHREASON") @db.VarChar(255)
+  gmAgeUnit          Int       @default(999) @map("GMAGEUNIT")
+  gmSs               String?   @map("GMSS") @db.VarChar(1000)
+  gmPe               String?   @map("GMPE") @db.VarChar(1000)
+  gmTempUnit         Int       @default(999) @map("GMTEMPUNIT")
+  gmHepb             Int       @default(999) @map("GMHEPB")
+  gmClnId            String?   @map("GMCLNID") @db.VarChar(10)
+  gmInsert           DateTime? @map("GMINSERT")
+  gmUpdate           DateTime? @map("GMUPDATE")
+  gmStatus           Int       @default(0) @map("GMSTATUS")
+  gmSync             Int       @default(0) @map("GMSYNC")
+  gmRemark           String?   @map("GMREMARK") @db.VarChar(255)
+  gmMuac             Float?    @map("GMMUAC")
+  gmDxStatus         Int       @default(0) @map("GMDXSTATUS")
+  gmMigrant          Int       @default(999) @map("GMMIGRANT")
+  gmIdp              Int       @default(999) @map("GMIDP")
+  gmDSee             Int       @default(999) @map("GMDSEE")
+  gmDHear            Int       @default(999) @map("GMDHEAR")
+  gmDWalk            Int       @default(999) @map("GMDWALK")
+  gmDRembr           Int       @default(999) @map("GMDREMBR")
+  gmDWash            Int       @default(999) @map("GMDWASH")
+  gmDCommu           Int       @default(999) @map("GMDCOMMU")
+  gmLacMother        Int       @default(999) @map("GMLACMOTHER")
+  gmDisability       Int       @default(999) @map("GMDISABILITY")
+  gmDiarrhoea        Int       @default(999) @map("GMDIARRHOEA")
+  gmPneumonia        Int       @default(999) @map("GMPNEUMONIA")
 
-  // Relations
-  country     Country?     @relation(fields: [countryId], references: [id])
-  departments Department[]
+  patient      Patient? @relation(fields: [gmRegId], references: [regId])
+  clinic       Clinic?  @relation(fields: [gmClnId], references: [clnId])
+  organization Org?     @relation(fields: [gmOrg], references: [orgId])
+
+  @@map("TBL_GM")
+}
+
+model Cfrm {
+  id                      Int       @id @default(autoincrement()) @map("ID")
+  cfrmRegCode             String?   @map("CFRMREGCODE") @db.VarChar(6)
+  cfrmFbPerson            Int       @default(999) @map("CFRMFBPERSON")
+  cfrmFbPersonOther       String?   @map("CFRMFBPERSONOTHER") @db.VarChar(500)
+  cfrmFbDate              DateTime? @map("CFRMFBDATE")
+  cfrmFbSex               Int       @default(999) @map("CFRMFBSEX")
+  cfrmFbAge               Int       @default(999) @map("CFRMFBAGE")
+  cfrmFbAgeUnit           Int       @default(999) @map("CFRMFBAGEUNIT")
+  cfrmFbVillage           String?   @map("CFRMFBVILLAGE") @db.VarChar(20)
+  cfrmFbTsp               String?   @map("CFRMFBTSP") @db.VarChar(20)
+  cfrmFbDiv               String?   @map("CFRMFBDIV") @db.VarChar(20)
+  cfrmFbSatify1           Int?      @map("CFRMFBSATIFY1")
+  cfrmFbSatify2           Int?      @map("CFRMFBSATIFY2")
+  cfrmFbSatify3           Int?      @map("CFRMFBSATIFY3")
+  cfrmFbSatifyDetail      String?   @map("CFRMFBSATIFYDETAIL") @db.VarChar(1000)
+  cfrmFbDsee              Int?      @map("CFRMFBDSEE")
+  cfrmFbDhear             Int       @default(999) @map("CFRMFBDHEAR")
+  cfrmFbDwalk             Int?      @map("CFRMFBDWALK")
+  cfrmFbDcommu            Int?      @map("CFRMFBDCOMMU")
+  cfrmFbDrembr            Int?      @map("CFRMFBDREMBR")
+  cfrmFbDwash             Int?      @map("CFRMFBDWASH")
+  cfrmFbPersonCat1        Int?      @map("CFRMFBPERSONCAT1")
+  cfrmFbPersonCat2        Int?      @map("CFRMFBPERSONCAT2")
+  cfrmFbPersonCat2Other   String?   @map("CFRMFBPERSONCAT2OTHER") @db.VarChar(500)
+  cfrmFbPersonCat2Name    String?   @map("CFRMFBPERSONCAT2NAME") @db.VarChar(100)
+  cfrmFbPersonCat2Contact String?   @map("CFRMFBPERSONCAT2CONTACT")
+  cfrmFbOpenerName        String?   @map("CFRMFBOPENERNAME") @db.VarChar(100)
+  cfrmFbOpenerPosition    String?   @map("CFRMFBOPENERPOSITION") @db.VarChar(100)
+  cfrmFbOpenerTsp         String?   @map("CFRMFBOPENERTSP") @db.VarChar(100)
+  cfrmFbOpenerDiv         String?   @map("CFRMFBOPENERDIV") @db.VarChar(100)
+  cfrmFbProject           String?   @map("CFRMFBPROJECT") @db.VarChar(20)
+  cfrmFbOpenerDate        DateTime? @map("CFRMFBOPENERDATE")
+  cfrmFbReslAct           String?   @map("CFRMFBRESLACT") @db.VarChar(500)
+  cfrmFbReslPerson        Int       @default(999) @map("CFRMFBRESLPERSON")
+  cfrmFbRespMeth          Int       @default(999) @map("CFRMFBRESPMETH")
+  cfrmFbRespMethO         String?   @map("CFRMFBRESPMETHO") @db.VarChar(1000)
+  cfrmFbComplaint         Int       @default(999) @map("CFRMFBCOMPLAINT")
+  cfrmFbComplainOther     String?   @map("CFRMFBCOMPLAINOTHER") @db.VarChar(1000)
+  cfrmFbRecPerson         String?   @map("CFRMFBRECPERSON") @db.VarChar(100)
+  cfrmFbUsrLogin          String?   @map("CFRMFBUSRLOGIN") @db.VarChar(20)
+  cfrmFbInsert            DateTime? @map("CFRMFBINSERT")
+  cfrmFbUpdate            DateTime? @map("CFRMFBUPDATE")
+  cfrmFbStatus            Int?      @map("CFRMFBSTATUS")
+  cfrmFbSysnc             Int?      @map("CFRMFBSYSNC")
+  cfrmFbType1             Int       @default(999) @map("CFRMFBTYPE1")
+  cfrmFbType2             Int       @default(999) @map("CFRMFBTYPE2")
+  cfrmFbType3             Int       @default(999) @map("CFRMFBTYPE3")
+  cfrmFbType3Other        String?   @map("CFRMFBTYPE3OTHER") @db.VarChar(500)
+  cfrmFbActDate           DateTime? @map("CFRMFBACTDATE")
+  cfrmFbReslDate          DateTime? @map("CFRMFBRESLDATE")
+  cfrmFbOrg               String?   @map("CFRMFBORG") @db.VarChar(20)
+  cfrmFbComplaintPending  String?   @map("CFRMFBCOMPLAINTPENDING") @db.VarChar(1000)
+  cfrmFbPorg              String?   @map("CFRMFBPORG") @db.VarChar(20)
+
+  village      Village? @relation(fields: [cfrmFbVillage], references: [villageCode])
+  organization Org?     @relation(fields: [cfrmFbOrg], references: [orgId])
+  project      Project? @relation(fields: [cfrmFbProject], references: [projectId])
+
+  @@map("TBL_CFRM")
 }

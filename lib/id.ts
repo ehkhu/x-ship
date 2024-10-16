@@ -1,7 +1,7 @@
 import { customAlphabet } from 'nanoid';
 
 const prefixes = {
-  task: 'tsk',
+  task: 'db',
 };
 
 interface GenerateIdOptions {
